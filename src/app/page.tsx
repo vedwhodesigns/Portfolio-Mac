@@ -18,7 +18,7 @@ export default function Home() {
         </p>
         
         {/* Demonstrate the Viewer Controls */}
-        <div className="flex justify-center w-full">
+        <div className="fixed bottom-6 right-6 z-40">
           <ViewerControls 
             currentPage={page}
             totalPages={totalPages}

@@ -38,7 +38,7 @@ export default function RootLayout({
           {children}
           
           {/* Global Theme Toggle */}
-          <div className="fixed bottom-6 right-6 z-50">
+          <div className="fixed top-6 right-6 z-50">
             <ThemeToggle />
           </div>
         </ThemeProvider>
