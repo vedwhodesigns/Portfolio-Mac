@@ -5,7 +5,6 @@ import { MeshTransmissionMaterial, useTexture, RoundedBox, Cylinder } from "@rea
 import React, { Suspense, useRef } from "react";
 import * as THREE from "three";
 import { useTheme } from "next-themes";
-import { motion } from "framer-motion-3d";
 
 function DayNightImageBackground() {
   const { theme } = useTheme();
