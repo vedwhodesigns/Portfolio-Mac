@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import LiquidGlassBackground from "@/components/3d/LiquidGlassBackground";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,7 +36,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <LiquidGlassBackground />
+          <div className="relative z-10 w-full h-full min-h-screen">
           {children}
+          </div>
           
           {/* Global Theme Toggle */}
           <div className="fixed top-6 right-6 z-50">
