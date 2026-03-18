@@ -262,6 +262,38 @@ function ContactIcon() {
   );
 }
 
+/** Admin panel — gear/wrench icon */
+function AdminIcon() {
+  return (
+    <svg width="100%" height="100%" viewBox="0 0 128 128" fill="none">
+      <defs>
+        <radialGradient id="admin-bg" cx="38%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#8e8e93"/>
+          <stop offset="100%" stopColor="#3a3a3c"/>
+        </radialGradient>
+      </defs>
+      <rect width="128" height="128" rx="28" fill="url(#admin-bg)"/>
+      {/* Gear body */}
+      <circle cx="64" cy="64" r="18" fill="#f2f2f7" opacity="0.9"/>
+      <circle cx="64" cy="64" r="9" fill="#3a3a3c"/>
+      {/* Gear teeth */}
+      {[0,45,90,135,180,225,270,315].map((deg, i) => (
+        <rect
+          key={i}
+          x="60" y="24"
+          width="8" height="14"
+          rx="3"
+          fill="#f2f2f7"
+          opacity="0.9"
+          transform={`rotate(${deg} 64 64)`}
+        />
+      ))}
+      {/* Shine */}
+      <ellipse cx="50" cy="38" rx="18" ry="9" fill="rgba(255,255,255,0.18)" transform="rotate(-30 50 38)"/>
+    </svg>
+  );
+}
+
 /** Safari-style blue Earth globe */
 function GitHubIcon() {
   return (
@@ -654,6 +686,7 @@ export default function Dock() {
     { id: 'media',               label: 'Showreel',    icon: <VLCIcon />,           action: () => openWindow({ id: 'media', type: 'media', title: 'Showreel', x: 180, y: 80, width: 640, height: 400 }) },
     { id: 'contact',             label: 'Contact',     icon: <ContactIcon />,       action: () => openWindow({ id: 'contact', type: 'about', title: 'Contact', x: 260, y: 120, width: 480, height: 340 }) },
     { id: 'github',              label: 'GitHub',      icon: <NetworkGlobeIcon />,  action: () => window.open('https://github.com/vedwhodesigns', '_blank') },
+    { id: 'admin',               label: 'Admin',       icon: <AdminIcon />,         action: () => openWindow({ id: 'admin', type: 'admin', title: 'Admin Panel', x: 140, y: 60, width: 740, height: 520 }) },
   ];
 
   const minimized: Entry[] = windows

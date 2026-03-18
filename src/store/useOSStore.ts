@@ -7,6 +7,8 @@ export interface FileData {
   name: string
   fileUrl: string
   thumbnailUrl?: string
+  iconUrl?: string
+  folderId?: string | null
   tags: string[]
   dateModified: string
   kind: 'Image' | 'Video' | 'PDF' | 'Application' | 'Folder'
@@ -24,7 +26,7 @@ export interface Track {
 
 export interface OSWindow {
   id: string
-  type: 'finder' | 'media' | 'about' | 'contact'
+  type: 'finder' | 'media' | 'about' | 'contact' | 'admin'
   title: string
   x: number
   y: number
@@ -77,6 +79,24 @@ interface OSStore {
 
   // Master File Database
   files: FileData[]
+  folders: FolderData[]
+  tags: TagData[]
+  loadFromSupabase: () => Promise<void>
+  isLoading: boolean
+}
+
+export interface FolderData {
+  id: string
+  name: string
+  parent_id: string | null
+  icon_url: string | null
+  sort_order: number
+}
+
+export interface TagData {
+  id: string
+  name: string
+  color: string | null
 }
 
 import { MASTER_FILES } from '@/data/masterFiles'
@@ -218,6 +238,69 @@ export const useOSStore = create<OSStore>((set) => ({
   setVolume: (volume) => set({ volume }),
   setCurrentTime: (currentTime) => set({ currentTime }),
   setDuration: (duration) => set({ duration }),
+
+  // Supabase data loading
+  isLoading: false,
+  folders: [],
+  tags: [],
+  loadFromSupabase: async () => {
+    set({ isLoading: true })
+    try {
+      const [filesRes, tracksRes, foldersRes, tagsRes] = await Promise.all([
+        fetch('/api/files'),
+        fetch('/api/tracks'),
+        fetch('/api/folders'),
+        fetch('/api/tags'),
+      ])
+
+      if (filesRes.ok) {
+        const dbFiles = await filesRes.json()
+        // Map Supabase rows → FileData shape
+        const files: FileData[] = dbFiles.map((f: Record<string, unknown>) => ({
+          id: f.id as string,
+          name: f.name as string,
+          fileUrl: f.file_url as string,
+          thumbnailUrl: f.thumbnail_url as string | undefined,
+          iconUrl: f.icon_url as string | undefined,
+          tags: Array.isArray(f.tags)
+            ? (f.tags as Array<{ name: string }>).map((t) => t.name)
+            : [],
+          dateModified: f.date_modified as string,
+          kind: f.kind as FileData['kind'],
+          size: f.size as string,
+          folderId: f.folder_id as string | null,
+        }))
+        set({ files })
+      }
+
+      if (tracksRes.ok) {
+        const dbTracks = await tracksRes.json()
+        const tracks: Track[] = dbTracks.map((t: Record<string, unknown>) => ({
+          id: t.id as string,
+          title: t.title as string,
+          artist: t.artist as string,
+          duration: t.duration as number,
+          url: t.url as string,
+          albumArt: t.album_art as string | undefined,
+        }))
+        set({ tracks })
+      }
+
+      if (foldersRes.ok) {
+        const folders = await foldersRes.json()
+        set({ folders })
+      }
+
+      if (tagsRes.ok) {
+        const tags = await tagsRes.json()
+        set({ tags })
+      }
+    } catch (err) {
+      console.warn('Supabase not configured, using local data:', err)
+    } finally {
+      set({ isLoading: false })
+    }
+  },
 
   // Active File
   activeFile: null,

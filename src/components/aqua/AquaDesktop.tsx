@@ -7,6 +7,7 @@ import AquaWindow from './AquaWindow';
 import Finder from './Finder';
 import MediaViewer from './MediaViewer';
 import Dock from './Dock';
+import AdminPanel from './AdminPanel';
 
 // ── Power overlays ─────────────────────────────────────────
 
@@ -117,7 +118,10 @@ function DocumentIcon() {
 // ── AquaDesktop ─────────────────────────────────────────────
 
 export default function AquaDesktop() {
-  const { powerState, setPowerState, windows, openWindow, activeFile } = useOSStore();
+  const { powerState, setPowerState, windows, openWindow, activeFile, loadFromSupabase } = useOSStore();
+
+  // Load data from Supabase on mount (falls back to local data if not configured)
+  useEffect(() => { loadFromSupabase(); }, [loadFromSupabase]);
   const [selectedDesktopIcon, setSelectedDesktopIcon] = useState<string | null>(null);
 
   const handleDesktopClick = useCallback(() => {
@@ -189,6 +193,9 @@ export default function AquaDesktop() {
           )}
           {win.type === 'about' && (
             <AboutWindow title={win.title} />
+          )}
+          {win.type === 'admin' && (
+            <AdminPanel />
           )}
         </AquaWindow>
       ))}
