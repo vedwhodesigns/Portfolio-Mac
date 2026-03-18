@@ -175,6 +175,9 @@ export default function AquaDesktop() {
         ))}
       </div>
 
+      {/* CRT scanlines + noise overlay */}
+      <div className="crt-overlay" />
+
       {/* Windows */}
       {windows.map(win => (
         <AquaWindow key={win.id} win={win}>

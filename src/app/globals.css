@@ -580,32 +580,51 @@ body {
   z-index: 8000;
   display: flex;
   align-items: flex-end;
-  padding: 6px 14px 0;
-  gap: 3px;
+  padding: 8px 16px 0;
+  gap: 4px;
+  /* Aqua glass shelf */
   background: linear-gradient(180deg,
-    rgba(190,200,220,0.55) 0%,
-    rgba(160,175,200,0.62) 45%,
-    rgba(130,145,175,0.68) 100%
+    rgba(220,232,255,0.62) 0%,
+    rgba(180,200,235,0.70) 40%,
+    rgba(140,165,210,0.78) 100%
   );
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.38);
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.5);
   border-bottom: none;
-  backdrop-filter: blur(22px) saturate(1.4);
-  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  backdrop-filter: blur(28px) saturate(1.6);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
   box-shadow:
-    0 -1px 0 rgba(255,255,255,0.32),
-    inset 0 1px 0 rgba(255,255,255,0.45),
-    0 0 50px rgba(0,0,0,0.35);
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    0 -2px 20px rgba(0,0,0,0.18),
+    0 0 60px rgba(0,0,0,0.28);
 }
-/* Dock shelf reflection line at top */
+
+/* Gloss highlight across the top edge */
 .aqua-dock::before {
   content: '';
   position: absolute;
-  top: 0; left: 10px; right: 10px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.7) 70%, transparent 100%);
-  border-radius: 1px;
+  top: 0; left: 12px; right: 12px;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.85) 25%,
+    rgba(255,255,255,0.95) 50%,
+    rgba(255,255,255,0.85) 75%,
+    transparent 100%
+  );
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Subtle shelf reflection inside */
+.aqua-dock::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 0; right: 0; height: 40%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%);
+  border-radius: 14px 14px 0 0;
+  pointer-events: none;
 }
 
 .dock-item {
@@ -613,74 +632,164 @@ body {
   flex-direction: column;
   align-items: center;
   position: relative;
-  transition: none;
-  margin-bottom: 4px;
+  /* icons anchor to bottom so they grow upward */
+  justify-content: flex-end;
 }
 
 .dock-item-icon-wrap {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  transition: all 0.12s cubic-bezier(0.34,1.56,0.64,1);
-  transform-origin: bottom center;
+  cursor: pointer;
+  border-radius: 12px;
+  /* smooth spring-like size transition */
+  transition:
+    width  0.14s cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 0.14s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: width, height;
+  /* subtle drop shadow on icons */
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));
+}
+.dock-item-icon-wrap:hover {
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.4));
+}
+.dock-item-icon-wrap:active {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .dock-item-label {
   position: absolute;
-  bottom: calc(100% + 6px);
+  bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(24,24,24,0.88);
-  color: #fff;
+  background: rgba(20,20,20,0.82);
+  color: #f0f0f0;
   font-size: 11px;
   font-weight: 500;
-  padding: 3px 9px;
-  border-radius: 5px;
+  letter-spacing: 0.01em;
+  padding: 4px 10px;
+  border-radius: 6px;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: opacity 0.12s ease;
+  /* arrow */
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  z-index: 100;
+}
+.dock-item-label::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: rgba(20,20,20,0.82);
 }
 .dock-item:hover .dock-item-label { opacity: 1; }
 
 .dock-active-dot {
-  width: 4px; height: 4px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  background: rgba(0,0,0,0.7);
-  margin: 3px auto 2px;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 0 4px rgba(255,255,255,0.6);
+  margin: 4px auto 3px;
   flex-shrink: 0;
 }
-.dock-spacer { width: 6px; flex-shrink: 0; }
+.dock-dot-placeholder {
+  width: 4px;
+  height: 4px;
+  margin: 4px auto 3px;
+  flex-shrink: 0;
+}
 
 .dock-separator {
   width: 1px;
   align-self: stretch;
-  margin: 0 4px 8px;
+  margin: 4px 6px 10px;
   background: linear-gradient(180deg,
-    transparent 0%, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.3) 80%, transparent 100%
+    transparent 0%,
+    rgba(255,255,255,0.5) 20%,
+    rgba(255,255,255,0.5) 80%,
+    transparent 100%
   );
+  position: relative;
 }
 .dock-separator::after {
   content: '';
-  display: block;
+  position: absolute;
+  left: 1px; top: 0; bottom: 0;
   width: 1px;
-  height: 100%;
   background: linear-gradient(180deg,
-    transparent 0%, rgba(255,255,255,0.3) 20%, rgba(255,255,255,0.3) 80%, transparent 100%
+    transparent 0%,
+    rgba(0,0,0,0.2) 20%,
+    rgba(0,0,0,0.2) 80%,
+    transparent 100%
   );
-  margin-left: 1px;
-  margin-top: -100%;
 }
 
 @keyframes dock-bounce {
   0%   { transform: translateY(0); }
-  20%  { transform: translateY(-20px); }
-  40%  { transform: translateY(-5px); }
-  60%  { transform: translateY(-14px); }
-  80%  { transform: translateY(-2px); }
+  18%  { transform: translateY(-22px); }
+  36%  { transform: translateY(-4px); }
+  54%  { transform: translateY(-14px); }
+  72%  { transform: translateY(-2px); }
+  90%  { transform: translateY(-6px); }
   100% { transform: translateY(0); }
 }
 .dock-bouncing { animation: dock-bounce 0.65s ease-out; }
+
+/* ── CRT Overlay ──────────────────────────────────────────── */
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 7999;           /* just below dock (8000) */
+  pointer-events: none;
+  /* Scanlines */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.07) 2px,
+      rgba(0, 0, 0, 0.07) 3px
+    );
+}
+
+/* Animated film-grain noise via shifting SVG turbulence */
+.crt-overlay::before {
+  content: '';
+  position: absolute;
+  inset: -100px;
+  opacity: 0.048;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  animation: crt-noise 0.18s steps(1) infinite;
+}
+
+@keyframes crt-noise {
+  0%   { background-position:   0px    0px; }
+  14%  { background-position: -60px  -40px; }
+  28%  { background-position:  80px   20px; }
+  42%  { background-position: -20px   70px; }
+  57%  { background-position:  40px  -60px; }
+  71%  { background-position: -80px   10px; }
+  85%  { background-position:  20px   80px; }
+  100% { background-position:   0px    0px; }
+}
+
+/* Subtle vignette */
+.crt-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%,
+    transparent 60%,
+    rgba(0,0,0,0.28) 100%
+  );
+}
 
 /* ── Desktop Icons ────────────────────────────────────────── */
 .desktop-icon {
