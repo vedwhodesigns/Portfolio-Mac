@@ -37,64 +37,182 @@ function AquaClock() {
 
 interface WeatherData {
   temp: number;
-  code: number;
+  unit: string;
+  text: string;
+  icon: string;
+  city: string;
+  country: string;
 }
 
-function getWeatherIcon(code: number | undefined): string {
-  if (code === undefined) return '☼';
-  if (code === 0) return '☼';
-  if (code <= 3) return '⛅';
-  if (code <= 48) return '☁';
-  if (code <= 67) return '☂';
-  if (code <= 77) return '❄';
-  if (code <= 82) return '🌦';
-  return '⛈';
+type GeoState = 'idle' | 'requesting' | 'granted' | 'denied' | 'unavailable'
+
+const WEATHER_CACHE_KEY = 'aw_weather_cache'
+const WEATHER_CACHE_TTL = 10 * 60 * 1000 // 10 minutes
+
+function getCachedWeather(): WeatherData | null {
+  try {
+    const raw = sessionStorage.getItem(WEATHER_CACHE_KEY)
+    if (!raw) return null
+    const { data, ts } = JSON.parse(raw)
+    if (Date.now() - ts > WEATHER_CACHE_TTL) return null
+    return data
+  } catch { return null }
+}
+
+function setCachedWeather(data: WeatherData) {
+  try {
+    sessionStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ data, ts: Date.now() }))
+  } catch { /* ignore */ }
 }
 
 function WeatherApplet() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [geoState, setGeoState] = useState<GeoState>('idle');
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
+  // Close dropdown on outside click
   useEffect(() => {
-    if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      setLoading(false);
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const res = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude.toFixed(2)}&longitude=${longitude.toFixed(2)}&current=temperature_2m,weather_code`
-          );
-          const data = await res.json();
-          setWeather({
-            temp: Math.round(data.current.temperature_2m),
-            code: data.current.weather_code,
-          });
-        } catch {
-          // silently fail — no weather data shown
-        } finally {
-          setLoading(false);
-        }
-      },
-      () => setLoading(false),
-      { timeout: 8000 }
-    );
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const fetchWeather = useCallback(async (lat: number, lon: number) => {
+    try {
+      const res = await fetch(`/api/weather?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`);
+      if (!res.ok) return;
+      const data: WeatherData = await res.json();
+      setWeather(data);
+      setCachedWeather(data);
+    } catch { /* silently fail */ }
   }, []);
 
-  if (loading || !weather) {
-    return (
-      <span className="menubar-item" style={{ cursor: 'default', fontSize: 11, opacity: 0.6 }}>
-        ☼ --°C
-      </span>
+  const requestLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setGeoState('unavailable');
+      return;
+    }
+
+    // Check cache first
+    const cached = getCachedWeather();
+    if (cached) {
+      setWeather(cached);
+      setGeoState('granted');
+      return;
+    }
+
+    setGeoState('requesting');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeoState('granted');
+        fetchWeather(pos.coords.latitude, pos.coords.longitude);
+      },
+      () => {
+        setGeoState('denied');
+      },
+      { timeout: 10000, maximumAge: 300000 }
     );
-  }
+  }, [fetchWeather]);
+
+  // Auto-request on mount if permission was previously granted
+  useEffect(() => {
+    if (!navigator.permissions) { requestLocation(); return; }
+    navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+      if (result.state === 'granted') requestLocation();
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Refresh every 10 minutes when granted
+  useEffect(() => {
+    if (geoState !== 'granted') return;
+    const id = setInterval(() => {
+      navigator.geolocation?.getCurrentPosition(
+        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        () => {}
+      );
+    }, WEATHER_CACHE_TTL);
+    return () => clearInterval(id);
+  }, [geoState, fetchWeather]);
+
+  const label = geoState === 'idle' || geoState === 'requesting'
+    ? '☼ --°C'
+    : geoState === 'denied'
+    ? '☼ --'
+    : geoState === 'unavailable'
+    ? null
+    : weather
+    ? `${weather.icon} ${weather.temp}°${weather.unit}`
+    : '☼ --°C';
+
+  if (geoState === 'unavailable') return null;
 
   return (
-    <span className="menubar-item" style={{ cursor: 'default', fontSize: 11, fontVariantNumeric: 'tabular-nums' }}>
-      {getWeatherIcon(weather.code)} {weather.temp}°C
-    </span>
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        className={`menubar-item ${open ? 'open' : ''}`}
+        style={{ cursor: 'default', fontSize: 11, fontVariantNumeric: 'tabular-nums', padding: '0 6px' }}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          if (geoState === 'idle' || geoState === 'denied') {
+            requestLocation();
+          }
+          if (weather) setOpen(v => !v);
+        }}
+        title={weather ? `${weather.text} in ${weather.city}` : 'Click to enable weather'}
+      >
+        {geoState === 'requesting' ? '⟳ locating…' : label}
+      </button>
+
+      {open && weather && (
+        <div
+          className="aqua-dropdown"
+          style={{ right: 0, top: '100%', width: 180, padding: '10px 12px', boxSizing: 'border-box' }}
+        >
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 28, lineHeight: 1.2 }}>{weather.icon}</div>
+            <div style={{ fontSize: 20, fontWeight: 600, fontVariantNumeric: 'tabular-nums', marginTop: 4 }}>
+              {weather.temp}°{weather.unit}
+            </div>
+            <div style={{ fontSize: 11, opacity: 0.7, marginTop: 2 }}>{weather.text}</div>
+            <div style={{ fontSize: 10, opacity: 0.5, marginTop: 4 }}>
+              {weather.city}{weather.country ? `, ${weather.country}` : ''}
+            </div>
+          </div>
+          <div style={{ marginTop: 10, borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 6, textAlign: 'center' }}>
+            <button
+              className="aqua-menu-item"
+              style={{ fontSize: 10, padding: '2px 8px', width: '100%' }}
+              onClick={() => {
+                const cached = getCachedWeather();
+                if (!cached) return;
+                // force refresh
+                sessionStorage.removeItem(WEATHER_CACHE_KEY);
+                navigator.geolocation?.getCurrentPosition(
+                  (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+                  () => {}
+                );
+                setOpen(false);
+              }}
+            >
+              ⟳ Refresh
+            </button>
+            <div style={{ fontSize: 9, opacity: 0.4, marginTop: 4 }}>Powered by AccuWeather</div>
+          </div>
+        </div>
+      )}
+
+      {geoState === 'idle' && (
+        <div
+          className="aqua-dropdown"
+          style={{ right: 0, top: '100%', width: 200, padding: '10px 12px', boxSizing: 'border-box', display: open ? 'block' : 'none' }}
+        />
+      )}
+    </div>
   );
 }
 
