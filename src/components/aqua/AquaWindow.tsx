@@ -13,65 +13,78 @@ interface AquaWindowProps {
 export default function AquaWindow({
   win,
   children,
-  minWidth = 280,
+  minWidth = 300,
   minHeight = 180,
 }: AquaWindowProps) {
-  const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, updateWindowPos, updateWindowSize, activeWindowId } = useOSStore();
+  const {
+    closeWindow, minimizeWindow, maximizeWindow,
+    focusWindow, updateWindowPos, updateWindowSize, activeWindowId,
+  } = useOSStore();
 
-  const [pos, setPos] = useState({ x: win.x, y: win.y });
+  const [pos,  setPos]  = useState({ x: win.x, y: win.y });
   const [size, setSize] = useState({ width: win.width, height: win.height });
+  const [entering, setEntering] = useState(true);
+
   const isActive = activeWindowId === win.id;
 
-  // Sync if store updates externally (e.g. maximize)
+  // Sync from store (e.g. maximize)
   useEffect(() => { setPos({ x: win.x, y: win.y }); }, [win.x, win.y]);
   useEffect(() => { setSize({ width: win.width, height: win.height }); }, [win.width, win.height]);
 
+  // Entrance animation
+  useEffect(() => {
+    const t = setTimeout(() => setEntering(false), 160);
+    return () => clearTimeout(t);
+  }, []);
+
   // ── Drag ──────────────────────────────────────────────
-  const dragRef = useRef<{ startMouseX: number; startMouseY: number; startWinX: number; startWinY: number } | null>(null);
+  const dragStart = useRef<{ mx: number; my: number; wx: number; wy: number } | null>(null);
+  const livePos   = useRef(pos);
+  livePos.current = pos;
 
   const onTitleMouseDown = useCallback((e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('.traffic-light')) return;
+    if ((e.target as HTMLElement).closest('.traffic-lights')) return;
+    if (win.isMaximized) return;
     e.preventDefault();
     focusWindow(win.id);
-    dragRef.current = { startMouseX: e.clientX, startMouseY: e.clientY, startWinX: pos.x, startWinY: pos.y };
+    dragStart.current = { mx: e.clientX, my: e.clientY, wx: pos.x, wy: pos.y };
 
     const onMove = (ev: MouseEvent) => {
-      if (!dragRef.current) return;
-      const nx = dragRef.current.startWinX + ev.clientX - dragRef.current.startMouseX;
-      const ny = Math.max(22, dragRef.current.startWinY + ev.clientY - dragRef.current.startMouseY);
+      if (!dragStart.current) return;
+      const nx = dragStart.current.wx + ev.clientX - dragStart.current.mx;
+      const ny = Math.max(22, dragStart.current.wy + ev.clientY - dragStart.current.my);
       setPos({ x: nx, y: ny });
     };
     const onUp = () => {
-      if (!dragRef.current) return;
-      const nx = dragRef.current.startWinX + (window.event as MouseEvent)?.clientX - dragRef.current.startMouseX || pos.x;
-      updateWindowPos(win.id, pos.x, pos.y);
-      dragRef.current = null;
+      updateWindowPos(win.id, livePos.current.x, livePos.current.y);
+      dragStart.current = null;
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
     };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
-  }, [win.id, pos, focusWindow, updateWindowPos]);
+  }, [win.id, win.isMaximized, pos, focusWindow, updateWindowPos]);
 
   // ── Resize ────────────────────────────────────────────
-  const resizeRef = useRef<{ startMouseX: number; startMouseY: number; startW: number; startH: number } | null>(null);
+  const resizeStart = useRef<{ mx: number; my: number; w: number; h: number } | null>(null);
+  const liveSize    = useRef(size);
+  liveSize.current  = size;
 
   const onResizeMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     focusWindow(win.id);
-    resizeRef.current = { startMouseX: e.clientX, startMouseY: e.clientY, startW: size.width, startH: size.height };
+    resizeStart.current = { mx: e.clientX, my: e.clientY, w: size.width, h: size.height };
 
     const onMove = (ev: MouseEvent) => {
-      if (!resizeRef.current) return;
-      const nw = Math.max(minWidth, resizeRef.current.startW + ev.clientX - resizeRef.current.startMouseX);
-      const nh = Math.max(minHeight, resizeRef.current.startH + ev.clientY - resizeRef.current.startMouseY);
+      if (!resizeStart.current) return;
+      const nw = Math.max(minWidth,  resizeStart.current.w + ev.clientX - resizeStart.current.mx);
+      const nh = Math.max(minHeight, resizeStart.current.h + ev.clientY - resizeStart.current.my);
       setSize({ width: nw, height: nh });
     };
     const onUp = () => {
-      if (!resizeRef.current) return;
-      updateWindowSize(win.id, size.width, size.height);
-      resizeRef.current = null;
+      updateWindowSize(win.id, liveSize.current.width, liveSize.current.height);
+      resizeStart.current = null;
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
     };
@@ -81,25 +94,22 @@ export default function AquaWindow({
 
   if (win.isMinimized) return null;
 
-  const isMaximized = win.isMaximized;
+  const isMax = win.isMaximized;
 
   return (
     <div
-      className="aqua-window"
+      className={`aqua-window ${entering ? 'aqua-window-entering' : ''}`}
       style={{
         position: 'fixed',
-        left: isMaximized ? 0 : pos.x,
-        top: isMaximized ? 22 : pos.y,
-        width: isMaximized ? '100vw' : size.width,
-        height: isMaximized ? 'calc(100vh - 22px)' : size.height,
+        left:   isMax ? 0        : pos.x,
+        top:    isMax ? 22       : pos.y,
+        width:  isMax ? '100vw'  : size.width,
+        height: isMax ? 'calc(100vh - 22px)' : size.height,
         zIndex: win.zIndex,
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: isMaximized ? 0 : 8,
-        overflow: 'hidden',
+        borderRadius: isMax ? 0 : 6,
         boxShadow: isActive
-          ? '0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)'
-          : '0 10px 30px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.2)',
+          ? '0 22px 65px rgba(0,0,0,0.58), 0 0 0 1px rgba(0,0,0,0.28)'
+          : '0 10px 32px rgba(0,0,0,0.38), 0 0 0 1px rgba(0,0,0,0.22)',
       }}
       onMouseDown={() => focusWindow(win.id)}
     >
@@ -108,48 +118,54 @@ export default function AquaWindow({
         className={`aqua-titlebar ${isActive ? 'aqua-titlebar-active' : 'aqua-titlebar-inactive'}`}
         onMouseDown={onTitleMouseDown}
         onDoubleClick={() => maximizeWindow(win.id)}
-        style={{ cursor: 'default', userSelect: 'none' }}
+        style={{ cursor: 'default', userSelect: 'none', flexShrink: 0 }}
       >
         {/* Traffic Lights */}
-        <div className="traffic-lights traffic-light">
+        <div className="traffic-lights">
           <button
             className="tl tl-red"
-            onClick={(e) => { e.stopPropagation(); closeWindow(win.id); }}
+            onClick={e => { e.stopPropagation(); closeWindow(win.id); }}
             title="Close"
           >
-            <span className="tl-icon">×</span>
+            <span className="tl-icon">✕</span>
           </button>
           <button
             className="tl tl-yellow"
-            onClick={(e) => { e.stopPropagation(); minimizeWindow(win.id); }}
+            onClick={e => { e.stopPropagation(); minimizeWindow(win.id); }}
             title="Minimize"
           >
             <span className="tl-icon">−</span>
           </button>
           <button
             className="tl tl-green"
-            onClick={(e) => { e.stopPropagation(); maximizeWindow(win.id); }}
-            title="Maximize"
+            onClick={e => { e.stopPropagation(); maximizeWindow(win.id); }}
+            title={isMax ? 'Restore' : 'Zoom'}
           >
             <span className="tl-icon">+</span>
           </button>
         </div>
 
-        {/* Title */}
-        <span className="aqua-window-title">{win.title}</span>
+        {/* Centered title */}
+        <span className="aqua-window-title">
+          {win.type === 'finder' && (
+            <svg width="14" height="14" viewBox="0 0 14 14" style={{ opacity: isActive ? 0.7 : 0.4, flexShrink: 0 }}>
+              <rect x="1" y="2" width="12" height="9" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1"/>
+              <rect x="3" y="4" width="8" height="1.5" rx="0.75" fill="currentColor" opacity="0.6"/>
+              <rect x="3" y="6.5" width="6" height="1.5" rx="0.75" fill="currentColor" opacity="0.4"/>
+            </svg>
+          )}
+          {win.title}
+        </span>
       </div>
 
       {/* Content */}
-      <div className="aqua-window-content" style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      <div className="aqua-window-content">
         {children}
       </div>
 
-      {/* Resize Handle */}
-      {!isMaximized && (
-        <div
-          className="aqua-resize-handle"
-          onMouseDown={onResizeMouseDown}
-        />
+      {/* Resize handle */}
+      {!isMax && (
+        <div className="aqua-resize-handle" onMouseDown={onResizeMouseDown} />
       )}
     </div>
   );

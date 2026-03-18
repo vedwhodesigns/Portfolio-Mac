@@ -2,19 +2,29 @@
 
 /* ═══════════════════════════════════════════════════════════
    AQUA OS — Global Styles
-   Mac OS X "Aqua" theme recreation in CSS
+   Mac OS X Jaguar/Panther (10.1–10.2) authentic recreation
    ═══════════════════════════════════════════════════════════ */
 
 /* ── Reset ────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
-button { cursor: default; }
+button { cursor: default; font-family: inherit; }
+body { margin: 0; overflow: hidden; }
 
-/* ── Wallpaper ────────────────────────────────────────────── */
+/* ── Font ─────────────────────────────────────────────────── */
+body {
+  font-family: 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Wallpaper — Mac OS X Jaguar "Aqua Blue" ─────────────── */
 .aqua-wallpaper {
   background:
-    radial-gradient(ellipse 140% 80% at 60% 110%, #1e3a6e 0%, transparent 55%),
-    radial-gradient(ellipse 100% 60% at 20% 80%, #0d2044 0%, transparent 50%),
-    linear-gradient(180deg, #081428 0%, #0c1e3a 30%, #102a50 55%, #1a3a70 80%, #244880 100%);
+    radial-gradient(ellipse 160% 90% at 25% 90%, rgba(4,12,32,0.95) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 60% at 78% 12%, rgba(45,100,210,0.75) 0%, transparent 52%),
+    radial-gradient(ellipse 110% 75% at 48% 48%, rgba(20,65,155,0.82) 0%, transparent 62%),
+    radial-gradient(ellipse 70% 45% at 14% 32%, rgba(60,130,230,0.45) 0%, transparent 48%),
+    radial-gradient(ellipse 80% 50% at 55% 75%, rgba(10,35,100,0.6) 0%, transparent 50%),
+    linear-gradient(168deg, #1e5cbc 0%, #0f3585 28%, #09235e 55%, #122d70 80%, #1a3d88 100%);
 }
 
 /* ── Menu Bar ─────────────────────────────────────────────── */
@@ -26,140 +36,19 @@ button { cursor: default; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 4px;
-  background: linear-gradient(180deg,
-    rgba(230,230,230,0.97) 0%,
-    rgba(200,200,200,0.97) 40%,
-    rgba(190,190,190,0.97) 60%,
-    rgba(210,210,210,0.97) 100%
-  );
-  border-bottom: 1px solid rgba(0,0,0,0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  /* Subtle pinstripe */
-  background-image:
+  padding: 0 2px;
+  background:
     linear-gradient(180deg,
-      rgba(230,230,230,0.97) 0%,
-      rgba(200,200,200,0.97) 40%,
-      rgba(190,190,190,0.97) 60%,
-      rgba(210,210,210,0.97) 100%
-    ),
-    repeating-linear-gradient(180deg,
-      transparent 0px,
-      transparent 1px,
-      rgba(255,255,255,0.18) 1px,
-      rgba(255,255,255,0.18) 2px
+      rgba(242,242,242,0.98) 0%,
+      rgba(212,212,212,0.98) 45%,
+      rgba(200,200,200,0.98) 55%,
+      rgba(218,218,218,0.98) 100%
     );
-  background-blend-mode: normal, overlay;
+  border-bottom: 1px solid rgba(0,0,0,0.4);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.18);
 }
-
-.menubar-item {
-  display: flex;
-  align-items: center;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 3px;
-  border: none;
-  background: transparent;
-  color: #1a1a1a;
-  font-size: 13px;
-  font-family: inherit;
-  transition: background 0.1s;
-  white-space: nowrap;
-}
-.menubar-item:hover {
-  background: rgba(0,0,0,0.06);
-}
-
-/* ── Dropdowns ────────────────────────────────────────────── */
-.aqua-dropdown {
-  position: absolute;
-  z-index: 9500;
-  background: linear-gradient(180deg,
-    rgba(235,240,255,0.97) 0%,
-    rgba(220,230,250,0.97) 100%
-  );
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0,0,0,0.25);
-  border-radius: 6px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.12);
-  padding: 4px 0;
-  /* pinstripe */
-  background-image:
-    linear-gradient(180deg, rgba(235,240,255,0.97) 0%, rgba(220,230,250,0.97) 100%),
-    repeating-linear-gradient(180deg,
-      transparent 0px, transparent 1px,
-      rgba(255,255,255,0.25) 1px, rgba(255,255,255,0.25) 2px
-    );
-  background-blend-mode: normal, overlay;
-}
-
-.aqua-menu-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 3px 16px;
-  font-size: 13px;
-  font-family: inherit;
-  background: none;
-  border: none;
-  color: #1a1a1a;
-  border-radius: 0;
-  cursor: default;
-}
-.aqua-menu-item:hover:not(:disabled) {
-  background: linear-gradient(180deg, #4a88ff, #0055cc);
-  color: #fff;
-}
-.aqua-menu-header {
-  padding: 3px 16px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #555;
-  cursor: default;
-}
-.aqua-menu-divider {
-  height: 1px;
-  margin: 3px 4px;
-  background: rgba(0,0,0,0.15);
-}
-
-/* ── Window Chrome ────────────────────────────────────────── */
-.aqua-window {
-  font-family: inherit;
-  user-select: none;
-}
-
-.aqua-titlebar {
-  height: 22px;
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  gap: 6px;
-  border-bottom: 1px solid rgba(0,0,0,0.2);
-  position: relative;
-}
-
-.aqua-titlebar-active {
-  background: linear-gradient(180deg,
-    #e0e0e0 0%,
-    #c8c8c8 45%,
-    #c0c0c0 55%,
-    #d4d4d4 100%
-  );
-}
-.aqua-titlebar-inactive {
-  background: linear-gradient(180deg,
-    #ebebeb 0%,
-    #d8d8d8 45%,
-    #d4d4d4 55%,
-    #e4e4e4 100%
-  );
-}
-/* Pinstripe overlay on titlebar */
-.aqua-titlebar::after {
+/* Pinstripe on menu bar */
+.aqua-menubar::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -168,6 +57,148 @@ button { cursor: default; }
     180deg,
     transparent 0px, transparent 1px,
     rgba(255,255,255,0.22) 1px, rgba(255,255,255,0.22) 2px
+  );
+}
+
+.menubar-left  { display: flex; align-items: center; height: 100%; }
+.menubar-right { display: flex; align-items: center; height: 100%; }
+
+/* Menu bar trigger buttons */
+.menubar-item {
+  display: flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 7px;
+  border: none;
+  background: transparent;
+  color: #111;
+  font-size: 13px;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+  user-select: none;
+}
+.menubar-item:hover,
+.menubar-item.open {
+  background: linear-gradient(180deg, #3e76e8 0%, #1a4ecc 100%);
+  color: #fff;
+  border-radius: 2px;
+}
+.menubar-item-bold { font-weight: 700; }
+
+/* ── Dropdowns ────────────────────────────────────────────── */
+.aqua-dropdown {
+  position: absolute;
+  z-index: 9500;
+  background: rgba(248,248,248,0.97);
+  border: 1px solid rgba(0,0,0,0.28);
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.14);
+  padding: 4px 0;
+  min-width: 180px;
+}
+.aqua-dropdown-above {
+  border-radius: 5px 5px 0 0;
+  border-top: 1px solid rgba(0,0,0,0.28);
+  border-bottom: none;
+}
+
+.aqua-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  padding: 2px 16px 2px 20px;
+  font-size: 13px;
+  line-height: 17px;
+  background: none;
+  border: none;
+  color: #111;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+  position: relative;
+}
+.aqua-menu-item:hover:not(:disabled) {
+  background: linear-gradient(180deg, #3e76e8, #1a4ecc);
+  color: #fff;
+}
+.aqua-menu-item:disabled,
+.aqua-menu-item.disabled {
+  color: #aaa;
+  pointer-events: none;
+}
+.aqua-menu-item .shortcut {
+  color: #888;
+  font-size: 12px;
+  margin-left: 24px;
+}
+.aqua-menu-item:hover:not(:disabled) .shortcut { color: rgba(255,255,255,0.8); }
+.aqua-menu-item .checkmark {
+  position: absolute;
+  left: 5px;
+  font-size: 11px;
+}
+.aqua-menu-item .submenu-arrow {
+  margin-left: 8px;
+  font-size: 10px;
+}
+.aqua-menu-divider {
+  height: 1px;
+  margin: 3px 0;
+  background: rgba(0,0,0,0.14);
+}
+
+/* ── Window Chrome ────────────────────────────────────────── */
+.aqua-window {
+  font-family: inherit;
+  user-select: none;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+/* Window entrance */
+@keyframes window-open {
+  from { opacity: 0; transform: scale(0.94) translateY(4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.aqua-window-entering {
+  animation: window-open 0.14s cubic-bezier(0.2,0.8,0.4,1) forwards;
+}
+
+/* Title bar */
+.aqua-titlebar {
+  height: 22px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 6px;
+  position: relative;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(0,0,0,0.22);
+}
+.aqua-titlebar-active {
+  background: linear-gradient(180deg,
+    #e4e4e4 0%, #c6c6c6 45%, #bebebe 55%, #d2d2d2 100%
+  );
+}
+.aqua-titlebar-inactive {
+  background: linear-gradient(180deg,
+    #efefef 0%, #dadada 45%, #d6d6d6 55%, #e6e6e6 100%
+  );
+}
+.aqua-titlebar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px, transparent 1px,
+    rgba(255,255,255,0.2) 1px, rgba(255,255,255,0.2) 2px
   );
 }
 
@@ -180,173 +211,247 @@ button { cursor: default; }
   color: #2a2a2a;
   pointer-events: none;
   white-space: nowrap;
-  max-width: 60%;
+  max-width: 55%;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 1;
 }
-.aqua-titlebar-inactive .aqua-window-title {
-  color: #888;
-}
+.aqua-titlebar-inactive .aqua-window-title { color: #999; }
 
 /* Traffic Lights */
 .traffic-lights {
   display: flex;
   gap: 6px;
   align-items: center;
-  z-index: 1;
+  z-index: 2;
+  flex-shrink: 0;
 }
-
 .tl {
-  width: 13px;
-  height: 13px;
+  width: 13px; height: 13px;
   border-radius: 50%;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: filter 0.1s;
   position: relative;
   outline: none;
   cursor: default;
+  flex-shrink: 0;
 }
-.tl:hover { filter: brightness(1.15); }
 .tl-icon {
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 8px;
+  font-weight: 900;
   line-height: 1;
-  color: rgba(0,0,0,0.4);
+  color: rgba(0,0,0,0.5);
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: opacity 0.08s;
+  font-style: normal;
 }
-.tl:hover .tl-icon { opacity: 1; }
+.traffic-lights:hover .tl-icon { opacity: 1; }
 .tl-red {
-  background: radial-gradient(circle at 35% 32%, #ff8585 0%, #ff3b30 50%, #c0170c 100%);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.35);
+  background: radial-gradient(circle at 35% 30%, #ff8585 0%, #ff3b30 50%, #bf1a10 100%);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4);
 }
 .tl-yellow {
-  background: radial-gradient(circle at 35% 32%, #ffe88a 0%, #ffcc02 50%, #c09600 100%);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.35);
+  background: radial-gradient(circle at 35% 30%, #ffe88a 0%, #ffcc02 50%, #b89200 100%);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4);
 }
 .tl-green {
-  background: radial-gradient(circle at 35% 32%, #8aff8a 0%, #34c759 50%, #1a8030 100%);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.35);
+  background: radial-gradient(circle at 35% 30%, #8aff8a 0%, #34c759 50%, #1a8030 100%);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4);
 }
 .aqua-titlebar-inactive .tl-red,
 .aqua-titlebar-inactive .tl-yellow,
 .aqua-titlebar-inactive .tl-green {
-  background: radial-gradient(circle at 35% 32%, #d0d0d0 0%, #b0b0b0 50%, #909090 100%);
+  background: radial-gradient(circle at 35% 30%, #d4d4d4 0%, #b4b4b4 50%, #909090 100%);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 /* Resize handle */
 .aqua-resize-handle {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 16px;
-  height: 16px;
+  bottom: 0; right: 0;
+  width: 16px; height: 16px;
   cursor: nwse-resize;
   background: linear-gradient(135deg,
-    transparent 30%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.15) 40%,
-    transparent 40%, transparent 55%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.15) 65%,
-    transparent 65%, transparent 80%, rgba(0,0,0,0.15) 80%
+    transparent 30%, rgba(0,0,0,0.18) 30%, rgba(0,0,0,0.18) 42%,
+    transparent 42%, transparent 57%, rgba(0,0,0,0.18) 57%, rgba(0,0,0,0.18) 68%,
+    transparent 68%, transparent 83%, rgba(0,0,0,0.18) 83%
   );
   z-index: 5;
 }
 
 .aqua-window-content {
   background: #f0f0f0;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
 }
 
-/* ── Finder ──────────────────────────────────────────────── */
-.aqua-finder-sidebar {
-  width: 160px;
-  min-width: 160px;
-  background: linear-gradient(180deg, #8ab0d8 0%, #6b92c4 100%);
-  border-right: 1px solid rgba(0,0,0,0.18);
-  overflow-y: auto;
-  padding-top: 6px;
-}
+/* ── Finder Window ────────────────────────────────────────── */
 
-.finder-sidebar-header {
-  padding: 8px 10px 3px;
-  font-size: 10px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.65);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  user-select: none;
-}
-
-.finder-sidebar-item {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #fff;
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: default;
-  border-radius: 4px;
-  margin: 1px 4px;
-  width: calc(100% - 8px);
-  transition: background 0.1s;
-  user-select: none;
-}
-.finder-sidebar-item:hover {
-  background: rgba(255,255,255,0.18);
-}
-.finder-sidebar-item-active {
-  background: linear-gradient(180deg, #4a88ff, #0058d0) !important;
-  color: #fff;
-  box-shadow: 0 1px 3px rgba(0,60,160,0.4);
-}
-
+/* Finder Toolbar */
 .aqua-finder-toolbar {
-  height: 28px;
-  background: linear-gradient(180deg, #d8d8d8 0%, #c4c4c4 100%);
-  border-bottom: 1px solid #aaa;
+  height: 58px;
+  background: linear-gradient(180deg,
+    #e6e6e6 0%, #cccccc 40%, #c4c4c4 60%, #d0d0d0 100%
+  );
+  border-bottom: 1px solid #ababab;
   display: flex;
   align-items: center;
-  padding: 0 8px;
+  padding: 0 10px;
   gap: 8px;
+  position: relative;
+  flex-shrink: 0;
+}
+.aqua-finder-toolbar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px, transparent 1px,
+    rgba(255,255,255,0.2) 1px, rgba(255,255,255,0.2) 2px
+  );
 }
 
-.finder-tool-btn {
-  width: 24px;
-  height: 20px;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #f0f0f0, #d8d8d8);
-  font-size: 11px;
+/* Back button — pill shape */
+.finder-back-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 3px;
+  padding: 0 10px 0 8px;
+  height: 22px;
+  border-radius: 11px;
+  border: 1px solid #a0a0a0;
+  background: linear-gradient(180deg, #f4f4f4 0%, #dedede 100%);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.7);
+  font-size: 12px;
+  color: #333;
   cursor: default;
-  color: #444;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.15);
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  min-width: 52px;
 }
-.finder-tool-btn:hover { background: linear-gradient(180deg, #fff, #e4e4e4); }
+.finder-back-btn:not(:disabled):hover {
+  background: linear-gradient(180deg, #fefefe 0%, #e8e8e8 100%);
+}
+.finder-back-btn:not(:disabled):active {
+  background: linear-gradient(180deg, #d4d4d4 0%, #e2e2e2 100%);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+}
+.finder-back-btn:disabled { opacity: 0.4; }
+.finder-back-arrow {
+  font-size: 13px;
+  line-height: 1;
+  margin-top: -1px;
+  color: #555;
+}
 
+/* View segmented control */
+.finder-view-control {
+  display: flex;
+  border: 1px solid #a0a0a0;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.finder-view-btn {
+  width: 30px; height: 22px;
+  border: none;
+  border-right: 1px solid #b4b4b4;
+  background: linear-gradient(180deg, #f0f0f0 0%, #d8d8d8 100%);
+  display: flex; align-items: center; justify-content: center;
+  cursor: default;
+  color: #555;
+  transition: background 0.08s;
+}
+.finder-view-btn:last-child { border-right: none; }
+.finder-view-btn.active {
+  background: linear-gradient(180deg, #c4c4c4 0%, #d4d4d4 100%);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.22);
+  color: #111;
+}
+.finder-view-btn:not(.active):hover {
+  background: linear-gradient(180deg, #fafafa 0%, #e4e4e4 100%);
+}
+
+/* Toolbar vertical separator */
+.finder-toolbar-sep {
+  width: 1px;
+  height: 38px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  background: #a8a8a8;
+  margin: 0 4px;
+}
+.finder-toolbar-sep::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 1px; width: 1px;
+  background: rgba(255,255,255,0.65);
+}
+
+/* Toolbar shortcut buttons (Computer, Home, Favorites, Applications) */
+.finder-shortcut-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px 3px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: default;
+  position: relative;
+  z-index: 1;
+  min-width: 48px;
+}
+.finder-shortcut-btn:hover { background: rgba(0,0,0,0.07); }
+.finder-shortcut-btn.active { background: rgba(0,0,0,0.1); }
+.finder-shortcut-icon {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+}
+.finder-shortcut-label {
+  font-size: 10px;
+  color: #444;
+  white-space: nowrap;
+  line-height: 1.2;
+  font-family: inherit;
+}
+
+/* Finder content */
 .aqua-finder-content {
   flex: 1;
   overflow: auto;
-  background: #f8f8f8;
+  background: #fff;
 }
 
+/* Status bar */
 .aqua-finder-statusbar {
   height: 18px;
   background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 100%);
   border-top: 1px solid #aaa;
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 0 8px;
   font-size: 11px;
-  color: #555;
+  color: #444;
   user-select: none;
+  flex-shrink: 0;
 }
 
 /* Icon grid */
@@ -354,30 +459,44 @@ button { cursor: default; }
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  gap: 8px;
+  gap: 4px;
+  padding: 12px;
 }
-
 .finder-icon-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 80px;
-  padding: 6px 4px;
-  border-radius: 6px;
+  padding: 6px 4px 4px;
+  border-radius: 4px;
   border: none;
   background: transparent;
   cursor: default;
-  color: #1a1a1a;
-  font-size: 11px;
-  transition: background 0.1s;
+  color: #111;
+  transition: background 0.08s;
 }
-.finder-icon-item:hover { background: rgba(0,88,208,0.08); }
-.finder-icon-selected { background: rgba(0,88,208,0.12) !important; }
+.finder-icon-item:hover { background: rgba(0,88,208,0.07); }
+.finder-icon-selected { background: rgba(0,88,208,0.14) !important; }
+.finder-icon-label {
+  font-size: 11px;
+  margin-top: 3px;
+  text-align: center;
+  max-width: 76px;
+  line-height: 1.25;
+  padding: 1px 4px;
+  border-radius: 3px;
+  word-break: break-word;
+}
+.finder-icon-label.selected {
+  background: #0058d0;
+  color: #fff;
+}
 
 /* List view */
 .finder-list-header th {
   background: linear-gradient(180deg, #d8d8d8 0%, #c8c8c8 100%);
   border-bottom: 1px solid #aaa;
+  border-right: 1px solid #bbb;
   font-size: 11px;
   font-weight: 600;
   color: #444;
@@ -385,58 +504,312 @@ button { cursor: default; }
   top: 0;
   z-index: 1;
   white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 8px;
+  text-align: left;
 }
+.finder-list-header th:hover { background: linear-gradient(180deg, #e4e4e4 0%, #d4d4d4 100%); }
 .finder-list-row {
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
   cursor: default;
-  transition: background 0.05s;
 }
-.finder-list-row:hover { background: rgba(0,88,208,0.07); }
-.finder-list-row-selected { background: #0058d0 !important; color: #fff; }
+.finder-list-row:hover { background: rgba(0,88,208,0.06); }
+.finder-list-row-selected { background: #0058d0 !important; }
 .finder-list-row-selected td { color: #fff !important; }
+.finder-list-row td { padding: 3px 8px; font-size: 12px; color: #333; }
 
-/* ── Scrollbar — Aqua Blue Gel ────────────────────────────── */
+/* Column view */
+.finder-column-view {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+.finder-column {
+  min-width: 180px;
+  width: 180px;
+  border-right: 1px solid #ccc;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-shrink: 0;
+  background: #fff;
+}
+.finder-column:last-child { border-right: none; flex: 1; }
+.finder-column-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  font-size: 12px;
+  color: #111;
+  cursor: default;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  border-radius: 3px;
+  margin: 1px 2px;
+  width: calc(100% - 4px);
+}
+.finder-column-item:hover { background: rgba(0,88,208,0.08); }
+.finder-column-item.selected {
+  background: #0058d0;
+  color: #fff;
+}
+.finder-column-preview {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: #f8f8f8;
+  border-left: 1px solid #ddd;
+  gap: 8px;
+}
+
+/* ── Dock ─────────────────────────────────────────────────── */
+.aqua-dock {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8000;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 14px 0;
+  gap: 3px;
+  background: linear-gradient(180deg,
+    rgba(190,200,220,0.55) 0%,
+    rgba(160,175,200,0.62) 45%,
+    rgba(130,145,175,0.68) 100%
+  );
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.38);
+  border-bottom: none;
+  backdrop-filter: blur(22px) saturate(1.4);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  box-shadow:
+    0 -1px 0 rgba(255,255,255,0.32),
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    0 0 50px rgba(0,0,0,0.35);
+}
+/* Dock shelf reflection line at top */
+.aqua-dock::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10px; right: 10px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.7) 70%, transparent 100%);
+  border-radius: 1px;
+}
+
+.dock-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: none;
+  margin-bottom: 4px;
+}
+
+.dock-item-icon-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transition: all 0.12s cubic-bezier(0.34,1.56,0.64,1);
+  transform-origin: bottom center;
+}
+
+.dock-item-label {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(24,24,24,0.88);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 5px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.dock-item:hover .dock-item-label { opacity: 1; }
+
+.dock-active-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.7);
+  margin: 3px auto 2px;
+  flex-shrink: 0;
+}
+.dock-spacer { width: 6px; flex-shrink: 0; }
+
+.dock-separator {
+  width: 1px;
+  align-self: stretch;
+  margin: 0 4px 8px;
+  background: linear-gradient(180deg,
+    transparent 0%, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.3) 80%, transparent 100%
+  );
+}
+.dock-separator::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg,
+    transparent 0%, rgba(255,255,255,0.3) 20%, rgba(255,255,255,0.3) 80%, transparent 100%
+  );
+  margin-left: 1px;
+  margin-top: -100%;
+}
+
+@keyframes dock-bounce {
+  0%   { transform: translateY(0); }
+  20%  { transform: translateY(-20px); }
+  40%  { transform: translateY(-5px); }
+  60%  { transform: translateY(-14px); }
+  80%  { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+.dock-bouncing { animation: dock-bounce 0.65s ease-out; }
+
+/* ── Desktop Icons ────────────────────────────────────────── */
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 6px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  gap: 3px;
+  user-select: none;
+  cursor: default;
+  width: 80px;
+}
+.desktop-icon:focus { outline: none; }
+.desktop-icon.selected { background: rgba(0,80,200,0.45); }
+.desktop-icon-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.5);
+  line-height: 1.2;
+  max-width: 76px;
+  word-break: break-word;
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+.desktop-icon.selected .desktop-icon-label {
+  background: #0058d0;
+  text-shadow: none;
+}
+
+/* ── Scrollbars — Aqua Blue Gel ───────────────────────────── */
 ::-webkit-scrollbar { width: 15px; height: 15px; }
 ::-webkit-scrollbar-track {
-  background: #e4e4e4;
+  background: #e0e0e0;
   border-left: 1px solid #ccc;
 }
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg,
-    #6eb0ff 0%, #2a7aff 35%, #0055e0 55%, #3a8aff 100%
+    #7abaff 0%, #3388ff 35%, #0055e8 58%, #4490ff 100%
   );
   border-radius: 8px;
   border: 3px solid transparent;
   background-clip: content-box;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg,
-    #88c0ff 0%, #4090ff 35%, #0060f0 55%, #5090ff 100%
+    #90c8ff 0%, #4898ff 35%, #0060f8 58%, #58a0ff 100%
   );
   background-clip: content-box;
 }
-::-webkit-scrollbar-button { display: none; }
-::-webkit-scrollbar-corner { background: #e4e4e4; }
-
-/* ── Music Controls ───────────────────────────────────────── */
-.aqua-control-btn {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: default;
-  padding: 2px;
-  border-radius: 4px;
-  transition: background 0.1s;
+::-webkit-scrollbar-button {
+  height: 15px;
+  background: linear-gradient(180deg, #d8d8d8, #c8c8c8);
+  border: 1px solid #bbb;
 }
-.aqua-control-btn:hover { background: rgba(0,0,0,0.08); }
+::-webkit-scrollbar-corner { background: #e0e0e0; }
 
-/* ── Volume slider ────────────────────────────────────────── */
-.aqua-slider-v {
-  -webkit-appearance: slider-vertical;
-  appearance: slider-vertical;
+/* ── Aqua button styles ───────────────────────────────────── */
+.aqua-btn-primary {
+  background: linear-gradient(180deg, #8cb2e0 0%, #bed9f8 100%);
+  border: 1px solid #5a8ab8;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25), inset 0 3px 5px rgba(36,80,143,0.35);
+  color: #111;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 1px 14px;
+  height: 20px;
   cursor: default;
+  user-select: none;
+}
+.aqua-btn-primary:hover {
+  background: linear-gradient(180deg, #9cc0e8 0%, #cce4ff 100%);
+}
+.aqua-btn-secondary {
+  background: linear-gradient(180deg, #f0f0f0 0%, #d8d8d8 100%);
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.18), inset 0 3px 4px rgba(160,160,160,0.3);
+  color: #111;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 1px 14px;
+  height: 20px;
+  cursor: default;
+  user-select: none;
+}
+.aqua-btn-secondary:hover {
+  background: linear-gradient(180deg, #fafafa 0%, #e4e4e4 100%);
 }
 
 /* ── Selection ────────────────────────────────────────────── */
 ::selection { background: #0058d0; color: #fff; }
+
+/* ── Alert / Dialog ───────────────────────────────────────── */
+.aqua-alert {
+  position: fixed;
+  z-index: 9800;
+  background: rgba(247,247,247,0.98);
+  border-radius: 6px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.3);
+  overflow: hidden;
+  width: 420px;
+}
+.aqua-alert-body {
+  padding: 20px 24px;
+  display: flex;
+  gap: 16px;
+}
+.aqua-alert-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 24px 16px;
+}
+
+/* ── Music / Volume ───────────────────────────────────────── */
+.aqua-control-btn {
+  background: none;
+  border: none;
+  font-size: 15px;
+  cursor: default;
+  padding: 3px;
+  border-radius: 4px;
+  transition: background 0.08s;
+}
+.aqua-control-btn:hover { background: rgba(0,0,0,0.08); }

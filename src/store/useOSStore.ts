@@ -24,7 +24,7 @@ export interface Track {
 
 export interface OSWindow {
   id: string
-  type: 'finder' | 'media' | 'about'
+  type: 'finder' | 'media' | 'about' | 'contact'
   title: string
   x: number
   y: number
