@@ -579,217 +579,166 @@ body {
   transform: translateX(-50%);
   z-index: 8000;
   display: flex;
-  align-items: flex-end;
-  padding: 8px 16px 0;
-  gap: 4px;
-  /* Aqua glass shelf */
+  align-items: flex-end;     /* all items anchor to the bottom edge */
+  padding: 6px 14px 0;
+  gap: 2px;
+
+  /* Mac OS X Jaguar frosted glass shelf */
   background: linear-gradient(180deg,
-    rgba(220,232,255,0.62) 0%,
-    rgba(180,200,235,0.70) 40%,
-    rgba(140,165,210,0.78) 100%
+    rgba(210,225,248,0.55) 0%,
+    rgba(170,190,230,0.68) 50%,
+    rgba(130,155,205,0.82) 100%
   );
-  border-top-left-radius: 14px;
-  border-top-right-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.5);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.45);
   border-bottom: none;
-  backdrop-filter: blur(28px) saturate(1.6);
-  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    0 -2px 20px rgba(0,0,0,0.18),
-    0 0 60px rgba(0,0,0,0.28);
+    inset 0 1px 0 rgba(255,255,255,0.55),
+    0 -1px 16px rgba(0,0,0,0.22),
+    0 0 48px rgba(0,0,0,0.3);
 }
 
-/* Gloss highlight across the top edge */
+/* Top gloss line */
 .aqua-dock::before {
   content: '';
   position: absolute;
-  top: 0; left: 12px; right: 12px;
-  height: 2px;
+  top: 0; left: 10px; right: 10px;
+  height: 1.5px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(255,255,255,0.85) 25%,
-    rgba(255,255,255,0.95) 50%,
-    rgba(255,255,255,0.85) 75%,
+    rgba(255,255,255,0.9) 20%,
+    rgba(255,255,255,1)   50%,
+    rgba(255,255,255,0.9) 80%,
     transparent 100%
   );
-  border-radius: 2px;
   pointer-events: none;
 }
 
-/* Subtle shelf reflection inside */
+/* Inner gloss sheen */
 .aqua-dock::after {
   content: '';
   position: absolute;
-  top: 2px; left: 0; right: 0; height: 40%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%);
-  border-radius: 14px 14px 0 0;
+  top: 1px; left: 0; right: 0; height: 38%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 100%);
+  border-radius: 12px 12px 0 0;
   pointer-events: none;
 }
 
+/* Each icon slot — bottom-aligned so icons grow upward */
 .dock-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  /* icons anchor to bottom so they grow upward */
   justify-content: flex-end;
+  position: relative;
 }
 
+/* The icon wrapper: size driven by JS, grows upward because parent is flex-end */
 .dock-item-icon-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-radius: 12px;
-  /* smooth spring-like size transition */
+  flex-shrink: 0;
+  /* instant tracking, spring-settle on leave */
   transition:
-    width  0.14s cubic-bezier(0.34, 1.56, 0.64, 1),
-    height 0.14s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width  0.08s ease-out,
+    height 0.08s ease-out;
   will-change: width, height;
-  /* subtle drop shadow on icons */
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.4));
 }
-.dock-item-icon-wrap:hover {
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.4));
+.aqua-dock:not(:hover) .dock-item-icon-wrap {
+  /* smooth spring return when cursor leaves */
+  transition:
+    width  0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .dock-item-icon-wrap:active {
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
 }
 
+/* Mac OS X–style dark tooltip label — no arrow, sits above the icon */
 .dock-item-label {
   position: absolute;
-  bottom: calc(100% + 10px);
+  /* float above the tallest possible icon + gap */
+  bottom: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(20,20,20,0.82);
-  color: #f0f0f0;
+  background: rgba(16,16,16,0.78);
+  color: #f8f8f8;
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.01em;
-  padding: 4px 10px;
-  border-radius: 6px;
+  letter-spacing: 0.02em;
+  padding: 3px 9px 4px;
+  border-radius: 4px;
   white-space: nowrap;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.12s ease;
-  /* arrow */
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  z-index: 100;
+  transition: opacity 0.08s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+  z-index: 9999;
 }
-.dock-item-label::after {
-  content: '';
-  position: absolute;
-  top: 100%; left: 50%;
-  transform: translateX(-50%);
-  border: 4px solid transparent;
-  border-top-color: rgba(20,20,20,0.82);
-}
-.dock-item:hover .dock-item-label { opacity: 1; }
 
+/* Active indicator — small white dot below icon */
 .dock-active-dot {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.9);
-  box-shadow: 0 0 4px rgba(255,255,255,0.6);
-  margin: 4px auto 3px;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 0 4px rgba(255,255,255,0.7), 0 1px 2px rgba(0,0,0,0.3);
+  margin: 3px auto 3px;
   flex-shrink: 0;
 }
 .dock-dot-placeholder {
-  width: 4px;
-  height: 4px;
-  margin: 4px auto 3px;
+  width: 5px;
+  height: 5px;
+  margin: 3px auto 3px;
   flex-shrink: 0;
 }
 
+/* Vertical separator between app section and trash */
 .dock-separator {
   width: 1px;
   align-self: stretch;
-  margin: 4px 6px 10px;
+  margin: 6px 8px 11px;
   background: linear-gradient(180deg,
     transparent 0%,
-    rgba(255,255,255,0.5) 20%,
-    rgba(255,255,255,0.5) 80%,
+    rgba(255,255,255,0.55) 20%,
+    rgba(255,255,255,0.55) 80%,
     transparent 100%
   );
   position: relative;
+  flex-shrink: 0;
 }
 .dock-separator::after {
   content: '';
   position: absolute;
-  left: 1px; top: 0; bottom: 0;
-  width: 1px;
+  left: 1px; top: 0; bottom: 0; width: 1px;
   background: linear-gradient(180deg,
     transparent 0%,
-    rgba(0,0,0,0.2) 20%,
-    rgba(0,0,0,0.2) 80%,
+    rgba(0,0,0,0.18) 20%,
+    rgba(0,0,0,0.18) 80%,
     transparent 100%
   );
 }
 
+/* Bounce animation on click */
 @keyframes dock-bounce {
   0%   { transform: translateY(0); }
-  18%  { transform: translateY(-22px); }
-  36%  { transform: translateY(-4px); }
-  54%  { transform: translateY(-14px); }
-  72%  { transform: translateY(-2px); }
-  90%  { transform: translateY(-6px); }
+  20%  { transform: translateY(-24px); }
+  40%  { transform: translateY(-4px); }
+  58%  { transform: translateY(-16px); }
+  74%  { transform: translateY(-2px); }
+  88%  { transform: translateY(-8px); }
   100% { transform: translateY(0); }
 }
-.dock-bouncing { animation: dock-bounce 0.65s ease-out; }
+.dock-bouncing { animation: dock-bounce 0.7s cubic-bezier(0.36,0.07,0.19,0.97); }
 
-/* ── CRT Overlay ──────────────────────────────────────────── */
-.crt-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 7999;           /* just below dock (8000) */
-  pointer-events: none;
-  /* Scanlines */
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(0, 0, 0, 0.07) 2px,
-      rgba(0, 0, 0, 0.07) 3px
-    );
-}
-
-/* Animated film-grain noise via shifting SVG turbulence */
-.crt-overlay::before {
-  content: '';
-  position: absolute;
-  inset: -100px;
-  opacity: 0.048;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-  animation: crt-noise 0.18s steps(1) infinite;
-}
-
-@keyframes crt-noise {
-  0%   { background-position:   0px    0px; }
-  14%  { background-position: -60px  -40px; }
-  28%  { background-position:  80px   20px; }
-  42%  { background-position: -20px   70px; }
-  57%  { background-position:  40px  -60px; }
-  71%  { background-position: -80px   10px; }
-  85%  { background-position:  20px   80px; }
-  100% { background-position:   0px    0px; }
-}
-
-/* Subtle vignette */
-.crt-overlay::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 50%,
-    transparent 60%,
-    rgba(0,0,0,0.28) 100%
-  );
-}
+/* ── CRT Overlay — disabled ───────────────────────────────── */
+.crt-overlay { display: none; }
 
 /* ── Desktop Icons ────────────────────────────────────────── */
 .desktop-icon {
