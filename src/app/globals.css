@@ -634,24 +634,34 @@ body {
   align-items: center;
   justify-content: flex-end;
   position: relative;
+  --icon-size: 56px;
 }
 
-/* The icon wrapper: size driven by JS, grows upward because parent is flex-end */
+/* CSS magnification — sibling hover ripple + directional lean */
+.dock-item:hover                          { --icon-size: 100px; }
+.dock-item:hover + .dock-item             { --icon-size: calc(80px + var(--dock-offset-right, 0px)); }
+.dock-item:hover + .dock-item + .dock-item { --icon-size: calc(68px + var(--dock-offset-right, 0px)); }
+.dock-item:has(+ .dock-item:hover)               { --icon-size: calc(80px + var(--dock-offset-left, 0px)); }
+.dock-item:has(+ .dock-item + .dock-item:hover)  { --icon-size: calc(68px + var(--dock-offset-left, 0px)); }
+
+/* The icon wrapper — size read from --icon-size, grows upward via parent flex-end */
 .dock-item-icon-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  /* instant tracking, spring-settle on leave */
+  width:  var(--icon-size, 56px);
+  height: var(--icon-size, 56px);
+  /* instant tracking while hovering */
   transition:
-    width  0.08s ease-out,
-    height 0.08s ease-out;
+    width  0.1s cubic-bezier(0.25, 1, 0.5, 1),
+    height 0.1s cubic-bezier(0.25, 1, 0.5, 1);
   will-change: width, height;
   filter: drop-shadow(0 3px 5px rgba(0,0,0,0.4));
 }
 .aqua-dock:not(:hover) .dock-item-icon-wrap {
-  /* smooth spring return when cursor leaves */
+  /* spring return when cursor leaves dock */
   transition:
     width  0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
     height 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);

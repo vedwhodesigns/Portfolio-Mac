@@ -1,22 +1,18 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useOSStore } from '@/store/useOSStore';
 
 // ── Storage base URL ───────────────────────────────────────
 const STORAGE = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
 
-// ── Magnification config ───────────────────────────────────
-const BASE   = 56;   // resting icon size (px)
-const MAX    = 110;  // peak magnified size (px)
-const EXTRA  = MAX - BASE;
-const RADIUS = 160;  // px influence radius on each side
+// ── Lean-offset range (px) ─────────────────────────────────
+const MAX_OFFSET = 8;
 
-function getSize(mouseX: number, centerX: number): number {
-  const dist = Math.abs(mouseX - centerX);
-  if (dist >= RADIUS) return BASE;
-  const t = 1 - dist / RADIUS;
-  return BASE + EXTRA * (t * t);
+function scaleValue(value: number, from: [number, number], to: [number, number]) {
+  const scale = (to[1] - to[0]) / (from[1] - from[0]);
+  const capped = Math.min(from[1], Math.max(from[0], value)) - from[0];
+  return Math.floor(capped * scale + to[0]);
 }
 
 // ── Dock icon image ────────────────────────────────────────
@@ -31,7 +27,7 @@ function DockImg({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-// ── Trash icon (no uploaded asset) ────────────────────────
+// ── Trash icon ─────────────────────────────────────────────
 function TrashIcon({ full }: { full?: boolean }) {
   return (
     <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none">
@@ -53,30 +49,29 @@ function TrashIcon({ full }: { full?: boolean }) {
 
 export default function Dock() {
   const { openWindow, windows, restoreWindow } = useOSStore();
-  const dockRef  = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const restCenters = useRef<number[]>([]);
-
-  const [sizes,   setSizes]   = useState<number[]>([]);
-  const [dockHov, setDockHov] = useState(false);
-  const [hovIdx,  setHovIdx]  = useState<number | null>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
+  const [hovIdx, setHovIdx] = useState<number | null>(null);
 
   const isOpen    = useCallback((id: string) => windows.some(w => w.id === id && !w.isMinimized), [windows]);
   const hasWindow = useCallback((id: string) => windows.some(w => w.id === id), [windows]);
 
-  const snapshotCenters = useCallback(() => {
-    restCenters.current = itemRefs.current.map(el => {
-      if (!el) return 0;
-      const r = el.getBoundingClientRect();
-      return r.left + r.width / 2;
-    });
+  // Sets directional lean vars on dock based on cursor position within the hovered icon
+  const handleAppHover = useCallback((ev: React.MouseEvent<HTMLDivElement>) => {
+    if (!dockRef.current) return;
+    const rect = ev.currentTarget.getBoundingClientRect();
+    const cursorDistance = (ev.clientX - rect.left) / rect.width;
+    const offset = scaleValue(cursorDistance, [0, 1], [-MAX_OFFSET, MAX_OFFSET]);
+    dockRef.current.style.setProperty('--dock-offset-left', `${-offset}px`);
+    dockRef.current.style.setProperty('--dock-offset-right', `${offset}px`);
   }, []);
 
-  useEffect(() => {
-    snapshotCenters();
-    window.addEventListener('resize', snapshotCenters);
-    return () => window.removeEventListener('resize', snapshotCenters);
-  }, [snapshotCenters]);
+  const handleMouseLeave = useCallback(() => {
+    setHovIdx(null);
+    if (dockRef.current) {
+      dockRef.current.style.removeProperty('--dock-offset-left');
+      dockRef.current.style.removeProperty('--dock-offset-right');
+    }
+  }, []);
 
   const openFinder = (view: string, title: string) => {
     const id = `finder-${view}`;
@@ -114,44 +109,20 @@ export default function Dock() {
       action: () => restoreWindow(w.id),
     }));
 
-  const allApps   = [...apps, ...minimized];
-  const trashIdx  = allApps.length;
-  const totalItems = allApps.length + 1; // +1 for trash
-
-  const handleMouseEnter = () => { setDockHov(true); snapshotCenters(); };
-  const handleMouseLeave = () => { setDockHov(false); setSizes([]); setHovIdx(null); };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const mx = e.clientX;
-    setSizes(
-      Array.from({ length: totalItems }, (_, i) => {
-        const cx = restCenters.current[i] ?? 0;
-        return cx === 0 ? BASE : getSize(mx, cx);
-      })
-    );
-  };
-
-  const sz = (i: number) => sizes[i] ?? BASE;
+  const allApps  = [...apps, ...minimized];
+  const trashIdx = allApps.length;
 
   return (
-    <div
-      className="aqua-dock"
-      ref={dockRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className="aqua-dock" ref={dockRef} onMouseLeave={handleMouseLeave}>
       {allApps.map((item, i) => (
         <DockItem
           key={item.id}
           label={item.label}
           icon={item.icon}
-          size={sz(i)}
           isActive={isOpen(item.id)}
-          dockHovered={dockHov}
-          itemRef={el => { itemRefs.current[i] = el; }}
-          onHover={show => setHovIdx(show ? i : null)}
           isHovered={hovIdx === i}
+          onHover={show => setHovIdx(show ? i : null)}
+          onItemMouseMove={handleAppHover}
           onClick={item.action}
         />
       ))}
@@ -161,12 +132,10 @@ export default function Dock() {
       <DockItem
         label="Trash"
         icon={<TrashIcon full={false} />}
-        size={sz(trashIdx)}
         isActive={false}
-        dockHovered={dockHov}
-        itemRef={el => { itemRefs.current[trashIdx] = el; }}
-        onHover={show => setHovIdx(show ? trashIdx : null)}
         isHovered={hovIdx === trashIdx}
+        onHover={show => setHovIdx(show ? trashIdx : null)}
+        onItemMouseMove={handleAppHover}
         onClick={() => {}}
       />
     </div>
@@ -178,16 +147,14 @@ export default function Dock() {
 interface DockItemProps {
   label: string;
   icon: React.ReactNode;
-  size: number;
   isActive: boolean;
-  dockHovered: boolean;
   isHovered: boolean;
-  itemRef: (el: HTMLDivElement | null) => void;
   onHover: (show: boolean) => void;
+  onItemMouseMove: (ev: React.MouseEvent<HTMLDivElement>) => void;
   onClick: () => void;
 }
 
-function DockItem({ label, icon, size, isActive, dockHovered, isHovered, itemRef, onHover, onClick }: DockItemProps) {
+function DockItem({ label, icon, isActive, isHovered, onHover, onItemMouseMove, onClick }: DockItemProps) {
   const [bouncing, setBouncing] = useState(false);
 
   const handleClick = () => {
@@ -199,28 +166,21 @@ function DockItem({ label, icon, size, isActive, dockHovered, isHovered, itemRef
   return (
     <div
       className="dock-item"
-      ref={itemRef}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
+      onMouseMove={onItemMouseMove}
     >
-      {/* Label tooltip — only show when dock is hovered and this icon is hovered */}
-      <span
-        className="dock-item-label"
-        style={{ opacity: dockHovered && isHovered ? 1 : 0 }}
-      >
+      <span className="dock-item-label" style={{ opacity: isHovered ? 1 : 0 }}>
         {label}
       </span>
 
-      {/* Icon — grows upward because dock uses align-items:flex-end */}
       <div
         className={`dock-item-icon-wrap${bouncing ? ' dock-bouncing' : ''}`}
-        style={{ width: size, height: size }}
         onClick={handleClick}
       >
         {icon}
       </div>
 
-      {/* Active dot */}
       <div className={isActive ? 'dock-active-dot' : 'dock-dot-placeholder'} />
     </div>
   );
