@@ -54,35 +54,18 @@ const ColumnViewSVG = () => (
   </svg>
 );
 
-// Shortcut icons — placeholder SVGs (user will replace with real icons)
-const ComputerSVG = () => (
-  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-    <rect x="2" y="3" width="24" height="17" rx="2" fill="#8ab0d8" stroke="#5a80a8" strokeWidth="1"/>
-    <rect x="4" y="5" width="20" height="13" rx="1" fill="#c8e0f8"/>
-    <rect x="8" y="21" width="12" height="2" rx="1" fill="#8ab0d8"/>
-    <rect x="6" y="23" width="16" height="2" rx="1" fill="#8ab0d8"/>
-  </svg>
-);
+// ── Storage base URL ──────────────────────────────────────
+const STORAGE  = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const APPS128  = `${STORAGE}/128x128/apps`;
+const PLACES128 = `${STORAGE}/128x128/places`;
+const ACTIONS128 = `${STORAGE}/128x128/actions`;
+const SCALABLE_PLACES = `${STORAGE}/scalable/places`;
 
-const HomeSVG = () => (
-  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-    <polygon points="14,4 26,14 22,14 22,24 16,24 16,18 12,18 12,24 6,24 6,14 2,14" fill="#d46060" stroke="#a03030" strokeWidth="0.8" strokeLinejoin="round"/>
-    <rect x="11" y="15" width="6" height="9" rx="0.5" fill="#b84040"/>
-  </svg>
-);
-
-const FavoritesSVG = () => (
-  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-    <path d="M14 5 C14 5 8 5 8 11 C8 17 14 22 14 22 C14 22 20 17 20 11 C20 5 14 5 14 5Z" fill="#e05050" stroke="#b03030" strokeWidth="0.8"/>
-  </svg>
-);
-
-const ApplicationsSVG = () => (
-  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-    <polygon points="14,2 26,9 26,19 14,26 2,19 2,9" fill="#e8c060" stroke="#b08030" strokeWidth="0.8"/>
-    <text x="14" y="18" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#704000" fontFamily="serif">A</text>
-  </svg>
-);
+// Shortcut icons — real Aqua images from Supabase storage
+const ComputerSVG     = () => <img src={`${PLACES128}/computer.png`}           alt="Computer"     width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
+const HomeSVG         = () => <img src={`${PLACES128}/user-home.png`}          alt="Home"         width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
+const FavoritesSVG    = () => <img src={`${ACTIONS128}/bookmark-new.png`}      alt="Favorites"    width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
+const ApplicationsSVG = () => <img src={`${APPS128}/expose.png`}               alt="Applications" width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
 
 // Folder icon SVG
 const FolderSVG = ({ color = '#7aabdc' }: { color?: string }) => (
@@ -290,8 +273,15 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
           onClick={goBack}
           title="Back"
         >
-          <span className="finder-back-arrow">‹</span>
-          <span style={{ fontSize: 11, marginLeft: 2 }}>Back</span>
+          <img
+            src={`${SCALABLE_PLACES}/go-previous-symbolic.svg`}
+            alt="Back"
+            width={14}
+            height={14}
+            style={{ objectFit: 'contain', opacity: canGoBack ? 1 : 0.35, filter: 'brightness(0)' }}
+            draggable={false}
+          />
+          <span style={{ fontSize: 11, marginLeft: 3 }}>Back</span>
         </button>
 
         {/* View toggle — segmented control */}
@@ -350,7 +340,7 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
                   className={`finder-column-item ${colSel[0] === item.id ? 'selected' : ''}`}
                   onClick={e => { e.stopPropagation(); setColSel([item.id, null]); }}
                 >
-                  <span style={{ fontSize: 14 }}>📁</span>
+                  <img src={`${PLACES128}/folder-documents.png`} alt="folder" width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
                   <span>{item.type === 'folder' ? item.name : ''}</span>
                   {item.type === 'folder' && <span style={{ marginLeft: 'auto', fontSize: 9, opacity: 0.6 }}>›</span>}
                 </button>
@@ -366,11 +356,7 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
                     className={`finder-column-item ${colSel[1] === item.id ? 'selected' : ''}`}
                     onClick={e => {
                       e.stopPropagation();
-                      if (item.type === 'file') {
-                        setColSel([colSel[0], item.id]);
-                      } else {
-                        setColSel([colSel[0], item.id]);
-                      }
+                      setColSel([colSel[0], item.id]);
                     }}
                     onDoubleClick={e => {
                       e.stopPropagation();
@@ -378,9 +364,10 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
                       else navigateTo(item.id);
                     }}
                   >
-                    <span style={{ fontSize: 13 }}>
-                      {item.type === 'folder' ? '📁' : '📄'}
-                    </span>
+                    {item.type === 'folder'
+                      ? <img src={`${PLACES128}/folder-open.png`} alt="folder" width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
+                      : <img src={`${PLACES128}/user-desktop.png`} alt="file" width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
+                    }
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {item.type === 'folder' ? item.name : item.fileData.name}
                     </span>
@@ -419,7 +406,7 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
                   </>
                 ) : (
                   <div style={{ textAlign: 'center' }}>
-                    <span style={{ fontSize: 32, opacity: 0.3 }}>📁</span>
+                    <img src={`${PLACES128}/folder-open.png`} alt="folder" width={48} height={48} style={{ objectFit: 'contain', opacity: 0.3 }} draggable={false} />
                     <div style={{ fontSize: 11, color: '#aaa', marginTop: 8 }}>Select a file to preview</div>
                   </div>
                 )}

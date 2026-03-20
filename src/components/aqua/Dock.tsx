@@ -5,6 +5,8 @@ import { useOSStore } from '@/store/useOSStore';
 
 // ── Storage base URL ───────────────────────────────────────
 const STORAGE = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const APPS    = `${STORAGE}/128x128/apps`;
+const PLACES  = `${STORAGE}/128x128/places`;
 
 // ── Lean-offset range (px) ─────────────────────────────────
 const MAX_OFFSET = 8;
@@ -29,19 +31,14 @@ function DockImg({ src, alt }: { src: string; alt: string }) {
 
 // ── Trash icon ─────────────────────────────────────────────
 function TrashIcon({ full }: { full?: boolean }) {
+  const src = full ? `${PLACES}/user-trash-full.png` : `${PLACES}/user-trash.png`;
   return (
-    <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none">
-      <path d="M13 22 L16 52 Q16 54 18 54 L42 54 Q44 54 44 52 L47 22 Z"
-        fill={full ? '#c0b8a8' : '#d4cfc0'} stroke="#a09880" strokeWidth="0.8"/>
-      {full && <>
-        <line x1="24" y1="30" x2="24" y2="50" stroke="#a09880" strokeWidth="1.2" strokeLinecap="round"/>
-        <line x1="30" y1="28" x2="30" y2="50" stroke="#a09880" strokeWidth="1.2" strokeLinecap="round"/>
-        <line x1="36" y1="30" x2="36" y2="50" stroke="#a09880" strokeWidth="1.2" strokeLinecap="round"/>
-      </>}
-      <rect x="10" y="17" width="40" height="5" rx="2.5" fill="#b8b0a0" stroke="#908880" strokeWidth="0.8"/>
-      <rect x="23" y="11" width="14" height="7" rx="3" fill="#b8b0a0" stroke="#908880" strokeWidth="0.8"/>
-      <rect x="12" y="17.5" width="36" height="2" rx="1" fill="rgba(255,255,255,0.35)"/>
-    </svg>
+    <img
+      src={src}
+      alt={full ? 'Trash (Full)' : 'Trash'}
+      draggable={false}
+      style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+    />
   );
 }
 
@@ -87,14 +84,14 @@ export default function Dock() {
   interface Entry { id: string; label: string; icon: React.ReactNode; action: () => void; }
 
   const apps: Entry[] = [
-    { id: 'finder-desktop',      label: 'Finder',      icon: <DockImg src={`${STORAGE}/nautilus.png`}             alt="Finder" />,      action: () => openFinder('desktop', 'Macintosh HD') },
-    { id: 'about',               label: 'About Me',    icon: <DockImg src={`${STORAGE}/rhythmbox-notplaying.png`} alt="About Me" />,    action: () => openWindow({ id: 'about', type: 'about', title: 'About Vedant', x: 220, y: 100, width: 500, height: 380 }) },
-    { id: 'finder-applications', label: 'Design Work', icon: <DockImg src={`${STORAGE}/image-x-psd.png`}          alt="Design Work" />, action: () => openFinder('applications', 'Design Work') },
-    { id: 'finder-projects',     label: '3D & VFX',    icon: <DockImg src={`${STORAGE}/blender.png`}              alt="3D & VFX" />,    action: () => openFinder('projects', '3D & VFX') },
-    { id: 'media',               label: 'Showreel',    icon: <DockImg src={`${STORAGE}/VLC.png`}                  alt="Showreel" />,    action: () => openWindow({ id: 'media', type: 'media', title: 'Showreel', x: 180, y: 80, width: 640, height: 400 }) },
-    { id: 'contact',             label: 'Contact',     icon: <DockImg src={`${STORAGE}/emblem-sound.png`}         alt="Contact" />,     action: () => openWindow({ id: 'contact', type: 'about', title: 'Contact', x: 260, y: 120, width: 480, height: 340 }) },
-    { id: 'github',              label: 'GitHub',      icon: <DockImg src={`${STORAGE}/gnome-web-browser.png`}    alt="GitHub" />,      action: () => window.open('https://github.com/vedwhodesigns', '_blank') },
-    { id: 'admin',               label: 'Admin',       icon: <DockImg src={`${STORAGE}/gnome-panel-launcher.png`} alt="Admin" />,       action: () => openWindow({ id: 'admin', type: 'admin', title: 'Admin Panel', x: 140, y: 60, width: 740, height: 520 }) },
+    { id: 'finder-desktop',      label: 'Finder',      icon: <DockImg src={`${PLACES}/computer.png`}             alt="Finder" />,      action: () => openFinder('desktop', 'Macintosh HD') },
+    { id: 'about',               label: 'About Me',    icon: <DockImg src={`${APPS}/frontrow.png`}               alt="About Me" />,    action: () => openWindow({ id: 'about', type: 'about', title: 'About Vedant', x: 220, y: 100, width: 500, height: 380 }) },
+    { id: 'finder-applications', label: 'Design Work', icon: <DockImg src={`${APPS}/gimp.png`}                   alt="Design Work" />, action: () => openFinder('applications', 'Design Work') },
+    { id: 'finder-projects',     label: '3D & VFX',    icon: <DockImg src={`${APPS}/inkscape.png`}               alt="3D & VFX" />,    action: () => openFinder('projects', '3D & VFX') },
+    { id: 'media',               label: 'Showreel',    icon: <DockImg src={`${APPS}/quicktime.png`}              alt="Showreel" />,    action: () => openWindow({ id: 'media', type: 'media', title: 'Showreel', x: 180, y: 80, width: 640, height: 400 }) },
+    { id: 'contact',             label: 'Contact',     icon: <DockImg src={`${APPS}/email.png`}                  alt="Contact" />,     action: () => openWindow({ id: 'contact', type: 'about', title: 'Contact', x: 260, y: 120, width: 480, height: 340 }) },
+    { id: 'github',              label: 'GitHub',      icon: <DockImg src={`${APPS}/firefox.png`}                alt="GitHub" />,      action: () => window.open('https://github.com/vedwhodesigns', '_blank') },
+    { id: 'admin',               label: 'Admin',       icon: <DockImg src={`${APPS}/systempreferences.png`}      alt="Admin" />,       action: () => openWindow({ id: 'admin', type: 'admin', title: 'Admin Panel', x: 140, y: 60, width: 740, height: 520 }) },
   ];
 
   const minimized: Entry[] = windows
