@@ -11,9 +11,11 @@ button { cursor: default; font-family: inherit; }
 body { margin: 0; overflow: hidden; }
 
 /* ── Font ─────────────────────────────────────────────────── */
+/* Lucida Grande: native on macOS/iOS, loaded from cdnfonts.com on other platforms */
 body {
   font-family: 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ── Wallpaper — Mac OS X Jaguar "Aqua Blue" ─────────────── */

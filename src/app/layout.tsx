@@ -13,7 +13,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, overflow: 'hidden', fontFamily: '-apple-system, "Lucida Grande", "Helvetica Neue", sans-serif' }}>
+      <head>
+        {/* Lucida Grande web font — for Windows / Linux / Android where it's not a system font */}
+        <link rel="preconnect" href="https://fonts.cdnfonts.com" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.cdnfonts.com/css/lucida-grande"
+        />
+      </head>
+      <body style={{ margin: 0, overflow: 'hidden' }}>
         {children}
       </body>
     </html>
