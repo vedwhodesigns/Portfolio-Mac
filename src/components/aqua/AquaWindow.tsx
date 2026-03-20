@@ -148,11 +148,14 @@ export default function AquaWindow({
         {/* Centered title */}
         <span className="aqua-window-title">
           {win.type === 'finder' && (
-            <svg width="14" height="14" viewBox="0 0 14 14" style={{ opacity: isActive ? 0.7 : 0.4, flexShrink: 0 }}>
-              <rect x="1" y="2" width="12" height="9" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1"/>
-              <rect x="3" y="4" width="8" height="1.5" rx="0.75" fill="currentColor" opacity="0.6"/>
-              <rect x="3" y="6.5" width="6" height="1.5" rx="0.75" fill="currentColor" opacity="0.4"/>
-            </svg>
+            <img
+              src="https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/Mac-OS-X-Cheetah-master/scalable/places/folder.png"
+              alt=""
+              width={14}
+              height={14}
+              draggable={false}
+              style={{ objectFit: 'contain', flexShrink: 0, opacity: isActive ? 0.85 : 0.45 }}
+            />
           )}
           {win.title}
         </span>

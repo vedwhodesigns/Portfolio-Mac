@@ -5,8 +5,9 @@ import { useOSStore } from '@/store/useOSStore';
 
 // ── Storage base URL ───────────────────────────────────────
 const STORAGE  = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
-const APPS128  = `${STORAGE}/128x128/apps`;
-const STATUS_S = `${STORAGE}/scalable/status`;
+const CHEETAH  = `${STORAGE}/Mac-OS-X-Cheetah-master`;
+const APPS128  = `${CHEETAH}/128x128/apps`;
+const STATUS_S = `${CHEETAH}/scalable/status`;
 
 // ── Types ─────────────────────────────────────────────────
 
@@ -152,7 +153,7 @@ function WeatherApplet() {
         if (t.includes('shower') || t.includes('rain') || t.includes('drizzle')) return `${STATUS_S}/weather-showers.svg`;
         if (t.includes('fog') || t.includes('mist') || t.includes('haze')) return `${STATUS_S}/weather-fog.svg`;
         if (t.includes('cloud')) return `${STATUS_S}/weather-few-clouds.svg`;
-        return `${STATUS_S}/weather-clear.svg`;
+        return `${STATUS_S}/stock_weather-few-clouds.svg`;
       })()
     : null;
 

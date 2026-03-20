@@ -3,9 +3,10 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { useOSStore } from '@/store/useOSStore';
 
-const STORAGE = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
-const APPS    = `${STORAGE}/128x128/apps`;
-const PLACES  = `${STORAGE}/128x128/places`;
+const STORAGE  = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const CHEETAH  = `${STORAGE}/Mac-OS-X-Cheetah-master`;
+const APPS     = `${CHEETAH}/128x128/apps`;
+const PLACES   = `${CHEETAH}/128x128/places`;
 
 const MAX_ADDITIONAL_SIZE = 8; // px lean offset
 
@@ -80,7 +81,7 @@ export default function Dock() {
     { id: 'finder-projects',     label: '3D & VFX',    icon: <DockImg src={`${APPS}/inkscape.png`}          alt="3D & VFX" />,    action: () => openFinder('projects', '3D & VFX') },
     { id: 'media',               label: 'Showreel',    icon: <DockImg src={`${APPS}/quicktime.png`}         alt="Showreel" />,    action: () => openWindow({ id: 'media', type: 'media', title: 'Showreel', x: 180, y: 80, width: 640, height: 400 }) },
     { id: 'contact',             label: 'Contact',     icon: <DockImg src={`${APPS}/email.png`}             alt="Contact" />,     action: () => openWindow({ id: 'contact', type: 'about', title: 'Contact', x: 260, y: 120, width: 480, height: 340 }) },
-    { id: 'github',              label: 'GitHub',      icon: <DockImg src={`${APPS}/firefox.png`}           alt="GitHub" />,      action: () => window.open('https://github.com/vedwhodesigns', '_blank') },
+    { id: 'github',              label: 'GitHub',      icon: <DockImg src={`${APPS}/web-browser.png`}       alt="GitHub" />,      action: () => window.open('https://github.com/vedwhodesigns', '_blank') },
     { id: 'admin',               label: 'Admin',       icon: <DockImg src={`${APPS}/systempreferences.png`} alt="Admin" />,       action: () => openWindow({ id: 'admin', type: 'admin', title: 'Admin Panel', x: 140, y: 60, width: 740, height: 520 }) },
   ];
 
