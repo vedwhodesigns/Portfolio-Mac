@@ -3,6 +3,33 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useOSStore, OSWindow } from '@/store/useOSStore';
 
+const MACOS_X = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/MacOS-X/metacity-1';
+
+function TrafficLight({
+  normal, highlight, onClick, title,
+}: { normal: string; highlight: string; onClick: (e: React.MouseEvent) => void; title: string }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      className="tl"
+      onClick={onClick}
+      title={title}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ background: 'none', border: 'none', padding: 0, cursor: 'default', width: 13, height: 13, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+    >
+      <img
+        src={hovered ? `${MACOS_X}/${highlight}` : `${MACOS_X}/${normal}`}
+        alt={title}
+        width={13}
+        height={13}
+        draggable={false}
+        style={{ objectFit: 'contain', display: 'block' }}
+      />
+    </button>
+  );
+}
+
 interface AquaWindowProps {
   win: OSWindow;
   children: React.ReactNode;
@@ -122,27 +149,24 @@ export default function AquaWindow({
       >
         {/* Traffic Lights */}
         <div className="traffic-lights">
-          <button
-            className="tl tl-red"
+          <TrafficLight
+            normal="close-active.png"
+            highlight="close-highlight.png"
             onClick={e => { e.stopPropagation(); closeWindow(win.id); }}
             title="Close"
-          >
-            <span className="tl-icon">✕</span>
-          </button>
-          <button
-            className="tl tl-yellow"
+          />
+          <TrafficLight
+            normal="iconify-active.png"
+            highlight="iconify-highlight.png"
             onClick={e => { e.stopPropagation(); minimizeWindow(win.id); }}
             title="Minimize"
-          >
-            <span className="tl-icon">−</span>
-          </button>
-          <button
-            className="tl tl-green"
+          />
+          <TrafficLight
+            normal="maximize-active.png"
+            highlight="maximize-highlight.png"
             onClick={e => { e.stopPropagation(); maximizeWindow(win.id); }}
             title={isMax ? 'Restore' : 'Zoom'}
-          >
-            <span className="tl-icon">+</span>
-          </button>
+          />
         </div>
 
         {/* Centered title */}

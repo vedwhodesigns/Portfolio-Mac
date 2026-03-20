@@ -4,10 +4,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useOSStore } from '@/store/useOSStore';
 
 // ── Storage base URL ───────────────────────────────────────
-const STORAGE  = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
-const CHEETAH  = `${STORAGE}/Mac-OS-X-Cheetah-master`;
-const APPS128  = `${CHEETAH}/128x128/apps`;
-const STATUS_S = `${CHEETAH}/scalable/status`;
+const STORAGE   = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const CHEETAH   = `${STORAGE}/Mac-OS-X-Cheetah-master`;
+const APPS128   = `${CHEETAH}/128x128/apps`;
+const STATUS_S  = `${CHEETAH}/scalable/status`;
+const MACOSX    = `${STORAGE}/MacOS-X/gtk-2.0/icons`;
 
 // ── Types ─────────────────────────────────────────────────
 
@@ -451,12 +452,12 @@ function VolumeApplet() {
   }, [open]);
 
   const volIcon = volume === 0
-    ? `${STATUS_S}/audio-volume-muted.svg`
+    ? `${MACOSX}/volume-mute.png`
     : volume < 0.4
-    ? `${STATUS_S}/audio-volume-low.svg`
+    ? `${MACOSX}/volume-min.png`
     : volume < 0.75
-    ? `${STATUS_S}/audio-volume-medium.svg`
-    : `${STATUS_S}/audio-volume-high.svg`;
+    ? `${MACOSX}/volume-med.png`
+    : `${MACOSX}/volume-max.png`;
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
@@ -471,14 +472,14 @@ function VolumeApplet() {
       {open && (
         <div className="aqua-dropdown" style={{ right: 0, top: '100%', width: 48, padding: '10px 0' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <img src={`${STATUS_S}/audio-volume-high.svg`} alt="High" width={12} height={12} draggable={false} />
+            <img src={`${MACOSX}/volume-max.png`} alt="High" width={12} height={12} draggable={false} />
             <input
               type="range" min={0} max={1} step={0.02}
               value={volume}
               onChange={e => setVolume(parseFloat(e.target.value))}
               style={{ writingMode: 'vertical-lr', direction: 'rtl', height: 70, cursor: 'default' }}
             />
-            <img src={`${STATUS_S}/audio-volume-muted.svg`} alt="Mute" width={12} height={12} draggable={false} />
+            <img src={`${MACOSX}/volume-mute.png`} alt="Mute" width={12} height={12} draggable={false} />
           </div>
         </div>
       )}
