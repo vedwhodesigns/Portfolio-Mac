@@ -161,25 +161,33 @@ const DockItem = forwardRef<HTMLLIElement, DockItemProps>(
     };
 
     return (
-      <li ref={ref} className="dock-item" onMouseEnter={onMouseEnter}>
-        {/* Tooltip — positioned above max possible icon height */}
+      <li
+        ref={ref}
+        className="dock-item"
+        style={{ width: `${(BASE_SIZE * scale).toFixed(1)}px` }}
+        onMouseEnter={onMouseEnter}
+      >
+        {/* Tooltip — above max-magnified icon height */}
         <span className="dock-item-label" style={{ opacity: showLabel ? 1 : 0 }}>
           {label}
         </span>
 
-        {/* Icon — transform-only magnification, layout stays BASE_SIZE */}
+        {/* Icon — absolutely pinned to bottom-center of the (growing) li slot.
+            translateX(-50%) centers it; scale() grows upward from there. */}
         <div
-          className={`dock-item-icon-wrap${bouncing ? ' dock-bouncing' : ''}`}
-          style={{
-            transform: `scale(${scale.toFixed(4)})`,
-            transformOrigin: 'bottom center',
-          }}
-          onClick={handleClick}
+          className="dock-item-icon-wrap"
+          style={{ transform: `translateX(-50%) scale(${scale.toFixed(4)})` }}
         >
-          {icon}
+          <div
+            className={bouncing ? 'dock-bouncing' : undefined}
+            style={{ width: '100%', height: '100%', cursor: 'pointer' }}
+            onClick={handleClick}
+          >
+            {icon}
+          </div>
         </div>
 
-        {/* Active indicator — upward triangle */}
+        {/* Active indicator — upward triangle sitting on dock surface */}
         {isActive && <span className="dock-active-dot" />}
       </li>
     );
