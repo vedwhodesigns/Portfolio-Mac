@@ -55,11 +55,12 @@ const ColumnViewSVG = () => (
 );
 
 // ── Storage base URL ──────────────────────────────────────
-const STORAGE  = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
-const APPS128  = `${STORAGE}/128x128/apps`;
-const PLACES128 = `${STORAGE}/128x128/places`;
-const ACTIONS128 = `${STORAGE}/128x128/actions`;
-const SCALABLE_PLACES = `${STORAGE}/scalable/places`;
+const STORAGE         = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const CHEETAH         = `${STORAGE}/Mac-OS-X-Cheetah-master`;
+const APPS128         = `${CHEETAH}/128x128/apps`;
+const PLACES128       = `${CHEETAH}/128x128/places`;
+const ACTIONS128      = `${CHEETAH}/128x128/actions`;
+const SCALABLE_PLACES = `${CHEETAH}/scalable/places`;
 
 // Shortcut icons — real Aqua images from Supabase storage
 const ComputerSVG     = () => <img src={`${PLACES128}/computer.png`}           alt="Computer"     width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
@@ -76,13 +77,13 @@ const MIME_ICONS: Record<string, string> = {
   Folder:      `${PLACES128}/folder-documents.png`,
 };
 
-// Scalable mime icons (SVG, crisp at any size)
-const SCALABLE = `${STORAGE}/scalable`;
+// Mime icons — Cheetah scalable/mimetypes (PNG, confirmed present)
+const SCALABLE = `${CHEETAH}/scalable`;
 const FILE_MIME_ICONS: Record<string, string> = {
-  Video:       `${SCALABLE}/mimetypes/video-x-generic.svg`,
-  Image:       `${SCALABLE}/mimetypes/image-x-generic.svg`,
-  PDF:         `${SCALABLE}/mimetypes/application-pdf.svg`,
-  Application: `${SCALABLE}/mimetypes/application-x-executable.svg`,
+  Video:       `${SCALABLE}/mimetypes/video-x-generic.png`,
+  Image:       `${SCALABLE}/mimetypes/image-x-generic.png`,
+  PDF:         `${SCALABLE}/mimetypes/application-pdf.png`,
+  Application: `${SCALABLE}/mimetypes/application-x-executable.png`,
 };
 
 const FolderSVG = ({ color: _color }: { color?: string }) => (
@@ -91,7 +92,7 @@ const FolderSVG = ({ color: _color }: { color?: string }) => (
 );
 
 const DriveSVG = () => (
-  <img src={`${STORAGE}/128x128/devices/drive-harddisk.png`} alt="Drive"
+  <img src={`${CHEETAH}/128x128/devices/drive-harddisk.png`} alt="Drive"
     width={52} height={52} style={{ objectFit: 'contain', display: 'block' }} draggable={false} />
 );
 
@@ -270,7 +271,7 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
           title="Back"
         >
           <img
-            src={`${SCALABLE_PLACES}/go-previous-symbolic.svg`}
+            src={`${SCALABLE_PLACES}/go-previous-symbolic.png`}
             alt="Back"
             width={14}
             height={14}
