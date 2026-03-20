@@ -3,6 +3,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useOSStore } from '@/store/useOSStore';
 
+// ── Storage base URL ───────────────────────────────────────
+const STORAGE  = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const APPS128  = `${STORAGE}/128x128/apps`;
+const STATUS_S = `${STORAGE}/scalable/status`;
+
 // ── Types ─────────────────────────────────────────────────
 
 type MenuItemDef =
@@ -139,15 +144,27 @@ function WeatherApplet() {
     return () => clearInterval(id);
   }, [geoState, fetchWeather]);
 
+  const weatherSvg = weather
+    ? (() => {
+        const t = weather.text.toLowerCase();
+        if (t.includes('storm') || t.includes('thunder')) return `${STATUS_S}/weather-storm.svg`;
+        if (t.includes('snow'))   return `${STATUS_S}/weather-snow.svg`;
+        if (t.includes('shower') || t.includes('rain') || t.includes('drizzle')) return `${STATUS_S}/weather-showers.svg`;
+        if (t.includes('fog') || t.includes('mist') || t.includes('haze')) return `${STATUS_S}/weather-fog.svg`;
+        if (t.includes('cloud')) return `${STATUS_S}/weather-few-clouds.svg`;
+        return `${STATUS_S}/weather-clear.svg`;
+      })()
+    : null;
+
   const label = geoState === 'idle' || geoState === 'requesting'
-    ? '☼ --°C'
+    ? null
     : geoState === 'denied'
-    ? '☼ --'
+    ? null
     : geoState === 'unavailable'
     ? null
     : weather
-    ? `${weather.icon} ${weather.temp}°${weather.unit}`
-    : '☼ --°C';
+    ? `${weather.temp}°${weather.unit}`
+    : null;
 
   if (geoState === 'unavailable') return null;
 
@@ -155,17 +172,21 @@ function WeatherApplet() {
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         className={`menubar-item ${open ? 'open' : ''}`}
-        style={{ cursor: 'default', fontSize: 11, fontVariantNumeric: 'tabular-nums', padding: '0 6px' }}
+        style={{ cursor: 'default', fontSize: 11, fontVariantNumeric: 'tabular-nums', padding: '0 4px', display: 'flex', alignItems: 'center', gap: 3 }}
         onMouseDown={(e) => {
           e.preventDefault();
-          if (geoState === 'idle' || geoState === 'denied') {
-            requestLocation();
-          }
+          if (geoState === 'idle' || geoState === 'denied') requestLocation();
           if (weather) setOpen(v => !v);
         }}
         title={weather ? `${weather.text} in ${weather.city}` : 'Click to enable weather'}
       >
-        {geoState === 'requesting' ? '⟳ locating…' : label}
+        {geoState === 'requesting'
+          ? <span style={{ fontSize: 10, opacity: 0.6 }}>⟳</span>
+          : weatherSvg
+          ? <img src={weatherSvg} alt="weather" width={14} height={14} style={{ objectFit: 'contain' }} draggable={false} />
+          : <span style={{ fontSize: 11, opacity: 0.5 }}>☼</span>
+        }
+        {label && <span>{label}</span>}
       </button>
 
       {open && weather && (
@@ -314,11 +335,11 @@ function MusicApplet() {
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         className={`menubar-item ${open ? 'open' : ''}`}
-        style={{ fontSize: 12, padding: '0 6px' }}
+        style={{ fontSize: 12, padding: '0 4px', display: 'flex', alignItems: 'center', gap: 2 }}
         onMouseDown={(e) => { e.preventDefault(); setOpen(v => !v); }}
         title={isPlaying ? `Now playing: ${track?.title}` : 'Music'}
       >
-        {isPlaying ? '♫' : '♩'}
+        <img src={`${APPS128}/music.png`} alt="Music" width={14} height={14} style={{ objectFit: 'contain' }} draggable={false} />
       </button>
 
       {open && (
@@ -428,29 +449,35 @@ function VolumeApplet() {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const icon = volume === 0 ? '🔇' : volume < 0.4 ? '🔉' : '🔊';
+  const volIcon = volume === 0
+    ? `${STATUS_S}/audio-volume-muted.svg`
+    : volume < 0.4
+    ? `${STATUS_S}/audio-volume-low.svg`
+    : volume < 0.75
+    ? `${STATUS_S}/audio-volume-medium.svg`
+    : `${STATUS_S}/audio-volume-high.svg`;
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         className={`menubar-item ${open ? 'open' : ''}`}
-        style={{ fontSize: 12, padding: '0 6px' }}
+        style={{ fontSize: 12, padding: '0 4px', display: 'flex', alignItems: 'center' }}
         onMouseDown={(e) => { e.preventDefault(); setOpen(v => !v); }}
         title="Volume"
       >
-        {icon}
+        <img src={volIcon} alt="Volume" width={14} height={14} style={{ objectFit: 'contain' }} draggable={false} />
       </button>
       {open && (
         <div className="aqua-dropdown" style={{ right: 0, top: '100%', width: 48, padding: '10px 0' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 10 }}>🔊</span>
+            <img src={`${STATUS_S}/audio-volume-high.svg`} alt="High" width={12} height={12} draggable={false} />
             <input
               type="range" min={0} max={1} step={0.02}
               value={volume}
               onChange={e => setVolume(parseFloat(e.target.value))}
               style={{ writingMode: 'vertical-lr', direction: 'rtl', height: 70, cursor: 'default' }}
             />
-            <span style={{ fontSize: 10 }}>🔇</span>
+            <img src={`${STATUS_S}/audio-volume-muted.svg`} alt="Mute" width={12} height={12} draggable={false} />
           </div>
         </div>
       )}
@@ -727,8 +754,16 @@ export default function MenuBar() {
         ))}
       </div>
 
-      {/* Right — system tray: Weather | Music | Volume | Clock */}
+      {/* Right — system tray: WiFi | Weather | Music | Volume | Clock */}
       <div className="menubar-right">
+        <img
+          src={`${STATUS_S}/nm-signal-100.svg`}
+          alt="WiFi"
+          width={14} height={14}
+          style={{ objectFit: 'contain', margin: '0 4px', opacity: 0.85 }}
+          draggable={false}
+          title="AirPort"
+        />
         <WeatherApplet />
         <MusicApplet />
         <VolumeApplet />
