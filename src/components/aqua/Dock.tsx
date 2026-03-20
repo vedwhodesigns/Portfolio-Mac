@@ -1,67 +1,64 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, forwardRef } from 'react';
 import { useOSStore } from '@/store/useOSStore';
 
-const STORAGE  = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
-const CHEETAH  = `${STORAGE}/Mac-OS-X-Cheetah-master`;
-const APPS     = `${CHEETAH}/128x128/apps`;
-const PLACES   = `${CHEETAH}/128x128/places`;
+const STORAGE = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const CHEETAH = `${STORAGE}/Mac-OS-X-Cheetah-master`;
+const APPS    = `${CHEETAH}/128x128/apps`;
+const PLACES  = `${CHEETAH}/128x128/places`;
 
-const MAX_ADDITIONAL_SIZE = 8; // px lean offset
+// Magnification constants
+const BASE_SIZE = 56;   // px — layout size of each icon slot
+const MAX_SCALE = 1.85; // peak visual scale at cursor
+const SPREAD    = 96;   // px — half-width of magnification bell curve
 
-function scaleValue(value: number, from: [number, number], to: [number, number]) {
-  const scale = (to[1] - to[0]) / (from[1] - from[0]);
-  const capped = Math.min(from[1], Math.max(from[0], value)) - from[0];
-  return Math.floor(capped * scale + to[0]);
+function getScale(clientX: number | null, el: HTMLLIElement | null): number {
+  if (clientX === null || !el) return 1;
+  const rect   = el.getBoundingClientRect();
+  const center = rect.left + rect.width / 2;
+  const dist   = Math.abs(clientX - center);
+  if (dist >= SPREAD) return 1;
+  // Cosine bell: 1 at center, smooth falloff to 1 at SPREAD
+  const t = dist / SPREAD;
+  return 1 + (MAX_SCALE - 1) * Math.cos(t * Math.PI * 0.5) ** 2;
 }
+
+// ── Sub-components ──────────────────────────────────────────
 
 function DockImg({ src, alt }: { src: string; alt: string }) {
   return (
     <img
-      src={src}
-      alt={alt}
-      draggable={false}
+      src={src} alt={alt} draggable={false}
       style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
     />
   );
 }
 
 function TrashIcon({ full }: { full?: boolean }) {
-  const src = full ? `${PLACES}/user-trash-full.png` : `${PLACES}/user-trash.png`;
   return (
     <img
-      src={src}
-      alt={full ? 'Trash (Full)' : 'Trash'}
-      draggable={false}
+      src={full ? `${PLACES}/user-trash-full.png` : `${PLACES}/user-trash.png`}
+      alt={full ? 'Trash (Full)' : 'Trash'} draggable={false}
       style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
     />
   );
 }
 
+// ── Dock ───────────────────────────────────────────────────
+
 export default function Dock() {
   const { openWindow, windows, restoreWindow } = useOSStore();
-  const dockRef = useRef<HTMLDivElement>(null);
-  const [hovIdx, setHovIdx] = useState<number | null>(null);
+
+  // clientX tracked across the whole dock for magnification
+  const [clientX,    setClientX]    = useState<number | null>(null);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
+  // Refs to each <li> so we can measure their bounding rects
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   const isOpen    = useCallback((id: string) => windows.some(w => w.id === id && !w.isMinimized), [windows]);
   const hasWindow = useCallback((id: string) => windows.some(w => w.id === id), [windows]);
-
-  // Mirror of the reference handleAppHover — maps cursor X within icon → lean offset CSS vars
-  const handleAppHover = useCallback((ev: React.MouseEvent<HTMLLIElement>) => {
-    if (!dockRef.current) return;
-    const rect    = ev.currentTarget.getBoundingClientRect();
-    const cursor  = (ev.clientX - rect.left) / rect.width;
-    const offset  = scaleValue(cursor, [0, 1], [-MAX_ADDITIONAL_SIZE, MAX_ADDITIONAL_SIZE]);
-    dockRef.current.style.setProperty('--dock-offset-left',  `${-offset}px`);
-    dockRef.current.style.setProperty('--dock-offset-right', `${offset}px`);
-  }, []);
-
-  const handleDockLeave = useCallback(() => {
-    setHovIdx(null);
-    dockRef.current?.style.removeProperty('--dock-offset-left');
-    dockRef.current?.style.removeProperty('--dock-offset-right');
-  }, []);
 
   const openFinder = (view: string, title: string) => {
     const id = `finder-${view}`;
@@ -73,6 +70,9 @@ export default function Dock() {
       openWindow({ id, type: 'finder', title, x: 80, y: 50, width: 760, height: 500, finderView: view });
     }
   };
+
+  const handleMouseMove  = useCallback((e: React.MouseEvent) => setClientX(e.clientX), []);
+  const handleMouseLeave = useCallback(() => { setClientX(null); setHoveredIdx(null); }, []);
 
   const apps = [
     { id: 'finder-desktop',      label: 'Finder',      icon: <DockImg src={`${APPS}/file-manager.png`}      alt="Finder" />,      action: () => openFinder('desktop', 'Macintosh HD') },
@@ -88,10 +88,9 @@ export default function Dock() {
   const minimized = windows
     .filter(w => w.isMinimized)
     .map(w => ({
-      id: w.id,
-      label: w.title,
+      id: w.id, label: w.title,
       icon: (
-        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#e0e0e0,#c0c0c0)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px' }}>
+        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#e0e0e0,#c0c0c0)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>
           {w.type === 'finder' ? '📁' : '🖼️'}
         </div>
       ),
@@ -102,18 +101,22 @@ export default function Dock() {
   const trashIdx = allApps.length;
 
   return (
-    <nav ref={dockRef} className="aqua-dock" onMouseLeave={handleDockLeave}>
+    <nav
+      className="aqua-dock"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       <ul className="dock-list">
         {allApps.map((item, i) => (
           <DockItem
             key={item.id}
+            ref={el => { itemRefs.current[i] = el; }}
             label={item.label}
             icon={item.icon}
+            scale={getScale(clientX, itemRefs.current[i] ?? null)}
             isActive={isOpen(item.id)}
-            isHovered={hovIdx === i}
-            onMouseMove={handleAppHover}
-            onMouseEnter={() => setHovIdx(i)}
-            onMouseLeave={() => setHovIdx(null)}
+            showLabel={hoveredIdx === i}
+            onMouseEnter={() => setHoveredIdx(i)}
             onClick={item.action}
           />
         ))}
@@ -121,13 +124,13 @@ export default function Dock() {
         <li className="dock-separator" role="separator" />
 
         <DockItem
+          ref={el => { itemRefs.current[trashIdx] = el; }}
           label="Trash"
           icon={<TrashIcon />}
+          scale={getScale(clientX, itemRefs.current[trashIdx] ?? null)}
           isActive={false}
-          isHovered={hovIdx === trashIdx}
-          onMouseMove={handleAppHover}
-          onMouseEnter={() => setHovIdx(trashIdx)}
-          onMouseLeave={() => setHovIdx(null)}
+          showLabel={hoveredIdx === trashIdx}
+          onMouseEnter={() => setHoveredIdx(trashIdx)}
           onClick={() => {}}
         />
       </ul>
@@ -135,50 +138,50 @@ export default function Dock() {
   );
 }
 
-// ── DockItem ──────────────────────────────────────────────
+// ── DockItem ───────────────────────────────────────────────
 
 interface DockItemProps {
   label: string;
   icon: React.ReactNode;
+  scale: number;
   isActive: boolean;
-  isHovered: boolean;
-  onMouseMove: (ev: React.MouseEvent<HTMLLIElement>) => void;
+  showLabel: boolean;
   onMouseEnter: () => void;
-  onMouseLeave: () => void;
   onClick: () => void;
 }
 
-function DockItem({ label, icon, isActive, isHovered, onMouseMove, onMouseEnter, onMouseLeave, onClick }: DockItemProps) {
-  const [bouncing, setBouncing] = useState(false);
+const DockItem = forwardRef<HTMLLIElement, DockItemProps>(
+  function DockItem({ label, icon, scale, isActive, showLabel, onMouseEnter, onClick }, ref) {
+    const [bouncing, setBouncing] = useState(false);
 
-  const handleClick = () => {
-    setBouncing(true);
-    setTimeout(() => setBouncing(false), 650);
-    onClick();
-  };
+    const handleClick = () => {
+      setBouncing(true);
+      setTimeout(() => setBouncing(false), 650);
+      onClick();
+    };
 
-  return (
-    <li
-      className="dock-item"
-      onMouseMove={onMouseMove}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {/* Tooltip */}
-      <span className="dock-item-label" style={{ opacity: isHovered ? 1 : 0 }}>
-        {label}
-      </span>
+    return (
+      <li ref={ref} className="dock-item" onMouseEnter={onMouseEnter}>
+        {/* Tooltip — positioned above max possible icon height */}
+        <span className="dock-item-label" style={{ opacity: showLabel ? 1 : 0 }}>
+          {label}
+        </span>
 
-      {/* Icon */}
-      <div
-        className={`dock-item-icon-wrap${bouncing ? ' dock-bouncing' : ''}`}
-        onClick={handleClick}
-      >
-        {icon}
-      </div>
+        {/* Icon — transform-only magnification, layout stays BASE_SIZE */}
+        <div
+          className={`dock-item-icon-wrap${bouncing ? ' dock-bouncing' : ''}`}
+          style={{
+            transform: `scale(${scale.toFixed(4)})`,
+            transformOrigin: 'bottom center',
+          }}
+          onClick={handleClick}
+        >
+          {icon}
+        </div>
 
-      {/* Active dot */}
-      {isActive && <span className="dock-active-dot" />}
-    </li>
-  );
-}
+        {/* Active indicator — upward triangle */}
+        {isActive && <span className="dock-active-dot" />}
+      </li>
+    );
+  }
+);
