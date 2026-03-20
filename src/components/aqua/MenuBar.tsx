@@ -470,16 +470,16 @@ function VolumeApplet() {
         <img src={volIcon} alt="Volume" width={14} height={14} style={{ objectFit: 'contain' }} draggable={false} />
       </button>
       {open && (
-        <div className="aqua-dropdown" style={{ right: 0, top: '100%', width: 48, padding: '10px 0' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <img src={`${MACOSX}/volume-max.png`} alt="High" width={12} height={12} draggable={false} />
+        <div className="aqua-dropdown" style={{ right: 0, top: '100%', width: 30, padding: '8px 0', minWidth: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <img src={`${MACOSX}/volume-max.png`} alt="High" width={10} height={10} draggable={false} style={{ opacity: 0.75 }} />
             <input
               type="range" min={0} max={1} step={0.02}
               value={volume}
               onChange={e => setVolume(parseFloat(e.target.value))}
-              style={{ writingMode: 'vertical-lr', direction: 'rtl', height: 70, cursor: 'default' }}
+              style={{ writingMode: 'vertical-lr', direction: 'rtl', height: 88, cursor: 'default', width: 18 }}
             />
-            <img src={`${MACOSX}/volume-mute.png`} alt="Mute" width={12} height={12} draggable={false} />
+            <img src={`${MACOSX}/volume-mute.png`} alt="Mute" width={10} height={10} draggable={false} style={{ opacity: 0.75 }} />
           </div>
         </div>
       )}

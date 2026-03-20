@@ -37,17 +37,16 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 2px;
-  background:
-    linear-gradient(180deg,
-      rgba(242,242,242,0.98) 0%,
-      rgba(212,212,212,0.98) 45%,
-      rgba(200,200,200,0.98) 55%,
-      rgba(218,218,218,0.98) 100%
-    );
-  border-bottom: 1px solid rgba(0,0,0,0.4);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.18);
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.99) 0%,
+    rgba(238,238,238,0.99) 40%,
+    rgba(224,224,224,0.99) 55%,
+    rgba(236,236,236,0.99) 100%
+  );
+  border-bottom: 1px solid rgba(0,0,0,0.45);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 1px 3px rgba(0,0,0,0.15);
 }
-/* Pinstripe on menu bar */
+/* Pinstripe + slight gloss on menu bar */
 .aqua-menubar::after {
   content: '';
   position: absolute;
@@ -55,8 +54,8 @@ body {
   pointer-events: none;
   background: repeating-linear-gradient(
     180deg,
-    transparent 0px, transparent 1px,
-    rgba(255,255,255,0.22) 1px, rgba(255,255,255,0.22) 2px
+    rgba(255,255,255,0.18) 0px, rgba(255,255,255,0.18) 1px,
+    transparent 1px, transparent 2px
   );
 }
 
@@ -77,6 +76,7 @@ body {
   position: relative;
   z-index: 1;
   user-select: none;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.85);
 }
 .menubar-item:hover,
 .menubar-item.open {
@@ -96,7 +96,7 @@ body {
   border-radius: 0 0 5px 5px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.14);
   padding: 4px 0;
-  min-width: 180px;
+  min-width: 180px; /* overridden inline for narrow dropdowns like volume */
 }
 .aqua-dropdown-above {
   border-radius: 5px 5px 0 0;
@@ -771,8 +771,45 @@ body {
 }
 .dock-bouncing { animation: dock-bounce 0.7s cubic-bezier(0.36,0.07,0.19,0.97); }
 
-/* ── CRT Overlay — disabled ───────────────────────────────── */
-.crt-overlay { display: none; }
+/* ── Outer frame background (surrounds the 1152/870 desktop) ─ */
+.aqua-outer-frame {
+  position: fixed;
+  inset: 0;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Desktop frame — enforces 1152/870 aspect ratio ──────── */
+.aqua-frame {
+  position: relative;
+  /* Fit whichever dimension is smaller */
+  width:  min(100vw, calc(100vh * (1152 / 870)));
+  height: min(100vh, calc(100vw * (870 / 1152)));
+  aspect-ratio: 1152 / 870;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 24px 80px rgba(0,0,0,0.9);
+  /* transform creates a new stacking context so position:fixed children
+     are scoped to this frame instead of the viewport */
+  transform: translateZ(0);
+}
+
+/* ── CRT Scanlines ────────────────────────────────────────── */
+.crt-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99000;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    transparent 1px,
+    rgba(0,0,0,0.055) 1px,
+    rgba(0,0,0,0.055) 2px
+  );
+}
 
 /* ── Desktop Icons ────────────────────────────────────────── */
 .desktop-icon {

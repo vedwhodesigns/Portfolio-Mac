@@ -136,67 +136,72 @@ export default function AquaDesktop() {
   ];
 
   return (
-    <div
-      className="aqua-wallpaper"
-      style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}
-      onClick={handleDesktopClick}
-    >
-      {/* Menu Bar */}
-      <MenuBar />
+    <div className="aqua-outer-frame">
+      <div className="aqua-frame">
+        {/* Wallpaper + all desktop content */}
+        <div
+          className="aqua-wallpaper"
+          style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
+          onClick={handleDesktopClick}
+        >
+          {/* Menu Bar */}
+          <MenuBar />
 
-      {/* Desktop Icons — top-right column */}
-      <div style={{
-        position: 'absolute',
-        top: 32,
-        right: 12,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 4,
-        zIndex: 100,
-      }}>
-        {desktopIcons.map(icon => (
-          <DesktopIcon
-            key={icon.id}
-            label={icon.label}
-            icon={icon.icon}
-            selected={selectedDesktopIcon === icon.id}
-            onSelect={() => setSelectedDesktopIcon(icon.id)}
-            onOpen={icon.onOpen}
-          />
-        ))}
+          {/* Desktop Icons — top-right column */}
+          <div style={{
+            position: 'absolute',
+            top: 32,
+            right: 12,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+            zIndex: 100,
+          }}>
+            {desktopIcons.map(icon => (
+              <DesktopIcon
+                key={icon.id}
+                label={icon.label}
+                icon={icon.icon}
+                selected={selectedDesktopIcon === icon.id}
+                onSelect={() => setSelectedDesktopIcon(icon.id)}
+                onOpen={icon.onOpen}
+              />
+            ))}
+          </div>
+
+          {/* Windows */}
+          {windows.map(win => (
+            <AquaWindow key={win.id} win={win}>
+              {win.type === 'finder' && (
+                <Finder windowId={win.id} initialView={win.finderView ?? 'desktop'} />
+              )}
+              {win.type === 'media' && activeFile && (
+                <MediaViewer file={activeFile} />
+              )}
+              {win.type === 'about' && (
+                <AboutWindow title={win.title} />
+              )}
+              {win.type === 'admin' && (
+                <AdminPanel />
+              )}
+            </AquaWindow>
+          ))}
+
+          {/* Dock */}
+          <Dock />
+
+          {/* Power Overlays */}
+          {powerState === 'sleep' && (
+            <SleepOverlay onWake={() => setPowerState('active')} />
+          )}
+          {powerState === 'shutdown' && (
+            <ShutdownScreen onRestart={() => { setPowerState('active'); }} />
+          )}
+        </div>
+
+        {/* CRT Scanlines — on top of everything */}
+        <div className="crt-overlay" />
       </div>
-
-      {/* CRT scanlines + noise overlay */}
-      <div className="crt-overlay" />
-
-      {/* Windows */}
-      {windows.map(win => (
-        <AquaWindow key={win.id} win={win}>
-          {win.type === 'finder' && (
-            <Finder windowId={win.id} initialView={win.finderView ?? 'desktop'} />
-          )}
-          {win.type === 'media' && activeFile && (
-            <MediaViewer file={activeFile} />
-          )}
-          {win.type === 'about' && (
-            <AboutWindow title={win.title} />
-          )}
-          {win.type === 'admin' && (
-            <AdminPanel />
-          )}
-        </AquaWindow>
-      ))}
-
-      {/* Dock */}
-      <Dock />
-
-      {/* Power Overlays */}
-      {powerState === 'sleep' && (
-        <SleepOverlay onWake={() => setPowerState('active')} />
-      )}
-      {powerState === 'shutdown' && (
-        <ShutdownScreen onRestart={() => { setPowerState('active'); }} />
-      )}
     </div>
   );
 }
