@@ -67,43 +67,39 @@ const HomeSVG         = () => <img src={`${PLACES128}/user-home.png`}          a
 const FavoritesSVG    = () => <img src={`${ACTIONS128}/bookmark-new.png`}      alt="Favorites"    width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
 const ApplicationsSVG = () => <img src={`${APPS128}/expose.png`}               alt="Applications" width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
 
-// Folder icon SVG
-const FolderSVG = ({ color = '#7aabdc' }: { color?: string }) => (
-  <svg width="52" height="44" viewBox="0 0 52 44" fill="none">
-    <path d="M2 10 Q2 6 6 6 L20 6 L24 10 L46 10 Q50 10 50 14 L50 38 Q50 42 46 42 L6 42 Q2 42 2 38 Z" fill={color} stroke={`${color}88`} strokeWidth="0.5"/>
-    <path d="M2 14 L50 14 L50 38 Q50 42 46 42 L6 42 Q2 42 2 38 Z" fill={`${color}dd`}/>
-    {/* Gloss */}
-    <path d="M3 14 L49 14 L49 22 Q26 28 3 22 Z" fill="rgba(255,255,255,0.25)"/>
-  </svg>
+// ── File/folder icon images from Supabase storage ─────────
+const MIME_ICONS: Record<string, string> = {
+  Video:       `${PLACES128}/folder-video.png`,   // overridden per-kind below
+  Image:       `${PLACES128}/folder-pictures.png`,
+  PDF:         `${PLACES128}/folder-documents.png`,
+  Application: `${APPS128}/expose.png`,
+  Folder:      `${PLACES128}/folder-documents.png`,
+};
+
+// Scalable mime icons (SVG, crisp at any size)
+const SCALABLE = `${STORAGE}/scalable`;
+const FILE_MIME_ICONS: Record<string, string> = {
+  Video:       `${SCALABLE}/mimetypes/video-x-generic.svg`,
+  Image:       `${SCALABLE}/mimetypes/image-x-generic.svg`,
+  PDF:         `${SCALABLE}/mimetypes/application-pdf.svg`,
+  Application: `${SCALABLE}/mimetypes/application-x-executable.svg`,
+};
+
+const FolderSVG = ({ color: _color }: { color?: string }) => (
+  <img src={`${PLACES128}/folder-documents.png`} alt="Folder"
+    width={52} height={44} style={{ objectFit: 'contain', display: 'block' }} draggable={false} />
 );
 
-// Drive icon SVG
 const DriveSVG = () => (
-  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-    <rect x="4" y="12" width="44" height="28" rx="4" fill="#b0b8c8" stroke="#8090a8" strokeWidth="1"/>
-    <rect x="4" y="12" width="44" height="12" rx="4" fill="#c8d0e0"/>
-    <rect x="4" y="20" width="44" height="4" fill="#c8d0e0"/>
-    <circle cx="40" cy="18" r="3" fill="#708090"/>
-    <circle cx="40" cy="18" r="1.5" fill="#a0b0c0"/>
-    <rect x="8" y="32" width="20" height="3" rx="1.5" fill="#8090a8"/>
-  </svg>
+  <img src={`${STORAGE}/128x128/devices/drive-harddisk.png`} alt="Drive"
+    width={52} height={52} style={{ objectFit: 'contain', display: 'block' }} draggable={false} />
 );
 
-// File icon SVG
 const FileSVG = ({ kind }: { kind: string }) => {
-  const colors: Record<string, string> = {
-    Video: '#6080e0', Image: '#40a070', PDF: '#e06040', Application: '#8060c0', Folder: '#7aabdc',
-  };
-  const color = colors[kind] ?? '#8090a8';
+  const src = FILE_MIME_ICONS[kind] ?? `${SCALABLE}/mimetypes/text-x-generic.svg`;
   return (
-    <svg width="44" height="52" viewBox="0 0 44 52" fill="none">
-      <path d="M4 2 L30 2 L40 12 L40 50 Q40 52 38 52 L6 52 Q4 52 4 50 Z" fill="#f8f8f8" stroke="#ccc" strokeWidth="1"/>
-      <path d="M30 2 L30 12 L40 12 Z" fill="#ddd"/>
-      <rect x="8" y="20" width="28" height="3" rx="1" fill={`${color}88`}/>
-      <rect x="8" y="26" width="24" height="2" rx="1" fill={`${color}66`}/>
-      <rect x="8" y="31" width="26" height="2" rx="1" fill={`${color}66`}/>
-      <rect x="8" y="36" width="20" height="2" rx="1" fill={`${color}44`}/>
-    </svg>
+    <img src={src} alt={kind}
+      width={44} height={52} style={{ objectFit: 'contain', display: 'block' }} draggable={false} />
   );
 };
 

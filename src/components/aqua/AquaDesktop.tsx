@@ -83,35 +83,22 @@ function DesktopIcon({ label, icon, selected, onSelect, onOpen }: DesktopIconPro
   );
 }
 
-// Drive icon for desktop
+// ── Storage base URL ───────────────────────────────────────
+const STORAGE    = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const DEVICES128 = `${STORAGE}/128x128/devices`;
+const MIMES128   = `${STORAGE}/128x128/mimetypes`;
+
 function DriveIcon() {
   return (
-    <svg width="52" height="48" viewBox="0 0 52 48" fill="none">
-      <rect x="2" y="6" width="48" height="32" rx="4" fill="#b8c0d0" stroke="#8090a8" strokeWidth="1"/>
-      <rect x="2" y="6" width="48" height="14" rx="4" fill="#d0d8e8"/>
-      <rect x="2" y="17" width="48" height="3" fill="#d0d8e8"/>
-      <circle cx="42" cy="13" r="4" fill="#809098"/>
-      <circle cx="42" cy="13" r="2" fill="#a8b8c0"/>
-      <rect x="8" y="27" width="22" height="4" rx="2" fill="#8090a8"/>
-      {/* Shine */}
-      <path d="M4 8 Q26 6 48 8 L48 14 Q26 12 4 14 Z" fill="rgba(255,255,255,0.3)"/>
-    </svg>
+    <img src={`${DEVICES128}/drive-harddisk.png`} alt="Macintosh HD"
+      width={52} height={52} style={{ objectFit: 'contain', display: 'block' }} draggable={false} />
   );
 }
 
 function DocumentIcon() {
   return (
-    <svg width="44" height="54" viewBox="0 0 44 54" fill="none">
-      <path d="M4 2 L30 2 L40 12 L40 52 Q40 54 38 54 L6 54 Q4 54 4 52 Z" fill="#f8f8f6" stroke="#d0d0d0" strokeWidth="1"/>
-      <path d="M30 2 L30 12 L40 12 Z" fill="#e0e0de"/>
-      {/* Text lines */}
-      <rect x="8" y="18" width="24" height="1.5" rx="0.75" fill="#bbb"/>
-      <rect x="8" y="22" width="28" height="1.5" rx="0.75" fill="#ccc"/>
-      <rect x="8" y="26" width="26" height="1.5" rx="0.75" fill="#ccc"/>
-      <rect x="8" y="30" width="20" height="1.5" rx="0.75" fill="#ccc"/>
-      <rect x="8" y="34" width="28" height="1.5" rx="0.75" fill="#ccc"/>
-      <rect x="8" y="38" width="22" height="1.5" rx="0.75" fill="#ccc"/>
-    </svg>
+    <img src={`${MIMES128}/text-x-generic.png`} alt="Document"
+      width={52} height={52} style={{ objectFit: 'contain', display: 'block' }} draggable={false} />
   );
 }
 
