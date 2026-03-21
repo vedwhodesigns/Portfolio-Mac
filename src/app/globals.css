@@ -727,6 +727,149 @@ body {
 }
 .dock-bouncing { animation: dock-bounce 0.65s cubic-bezier(0.36,0.07,0.19,0.97); }
 
+/* ═══════════════════════════════════════════════════════════
+   BOOT SCREEN — Mac OS X Jaguar authentic boot sequence
+   ═══════════════════════════════════════════════════════════ */
+
+/* Full-viewport overlay — sits above everything */
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: #4d6ea8;   /* classic Jaguar boot cornflower blue */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* CRT scanlines on the outer blue area */
+}
+.boot-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent        0px, transparent        1px,
+    rgba(0,0,0,0.055)  1px, rgba(0,0,0,0.055)  2px
+  );
+  pointer-events: none;
+}
+
+/* White/light-gray rounded panel — centered, matches screenshot proportions */
+.boot-panel {
+  position: relative;
+  width: 460px;
+  height: 330px;
+  background: linear-gradient(180deg, #f6f6f6 0%, #e6e6e6 100%);
+  border-radius: 6px;
+  box-shadow:
+    0 6px 40px rgba(0,0,0,0.5),
+    0 1px 0   rgba(255,255,255,0.7) inset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+}
+/* Fine scanlines on the panel itself */
+.boot-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent       0px, transparent       1px,
+    rgba(0,0,0,0.032) 1px, rgba(0,0,0,0.032) 2px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Apple logo area */
+.boot-apple {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 3px 8px rgba(0,40,120,0.35));
+}
+
+/* "Mac OS X" — Myriad-like thin sans, dark navy */
+.boot-title {
+  position: relative;
+  z-index: 2;
+  font-family: 'Gill Sans', 'Trebuchet MS', 'Lucida Grande', sans-serif;
+  font-size: 40px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  color: #232340;
+  margin-bottom: 36px;
+  line-height: 1;
+}
+
+/* Track — pill-shaped container */
+.boot-bar-track {
+  position: relative;
+  z-index: 2;
+  width: 280px;
+  height: 14px;
+  border-radius: 7px;
+  background: #b8b8b8;
+  border: 1px solid #888;
+  box-shadow: inset 0 2px 3px rgba(0,0,0,0.28);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+/* Fill — Aqua candy stripe, animated */
+.boot-bar-fill {
+  height: 100%;
+  border-radius: 7px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #4a9ae8  0px,  #4a9ae8  7px,
+    #2878d4  7px,  #2878d4 14px
+  );
+  background-size: 20px 100%;
+  animation: boot-stripe 0.45s linear infinite;
+  transition: width 0.28s linear;
+  position: relative;
+}
+/* Glossy top-half highlight */
+.boot-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.42) 0%,
+    rgba(255,255,255,0.08) 50%,
+    transparent            50%
+  );
+  border-radius: 7px;
+}
+@keyframes boot-stripe {
+  from { background-position: 20px 0; }
+  to   { background-position:  0px 0; }
+}
+
+/* Step label */
+.boot-step {
+  position: relative;
+  z-index: 2;
+  font-family: 'Lucida Grande', sans-serif;
+  font-size: 11px;
+  color: #555;
+  letter-spacing: 0.02em;
+}
+
+/* Fade-out transition */
+.boot-fadeout {
+  animation: boot-fade 0.7s ease forwards;
+}
+@keyframes boot-fade {
+  to { opacity: 0; }
+}
+
 /* ── Outer frame background (surrounds the 1152/870 desktop) ─ */
 .aqua-outer-frame {
   position: fixed;

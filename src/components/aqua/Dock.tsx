@@ -44,7 +44,7 @@ function TrashIcon({ full }: { full?: boolean }) {
 // ── Dock ───────────────────────────────────────────────────
 
 export default function Dock() {
-  const { openWindow, windows, restoreWindow } = useOSStore();
+  const { openWindow, windows, restoreWindow, files } = useOSStore();
   const dockRef   = useRef<HTMLElement>(null);
   const [hovered,   setHovered]   = useState(false);
   const [dockWidth, setDockWidth] = useState(0);
@@ -78,7 +78,7 @@ export default function Dock() {
     { id: 'about',               label: 'About Me',    icon: <DockImg src={`${APPS}/frontrow.png`}          alt="About Me" />,    action: () => openWindow({ id: 'about', type: 'about', title: 'About Vedant', x: 220, y: 100, width: 500, height: 380 }) },
     { id: 'finder-applications', label: 'Design Work', icon: <DockImg src={`${APPS}/gimp.png`}              alt="Design Work" />, action: () => openFinder('applications', 'Design Work') },
     { id: 'finder-projects',     label: '3D & VFX',    icon: <DockImg src={`${APPS}/cinelerra.png`}         alt="3D & VFX" />,    action: () => openFinder('projects', '3D & VFX') },
-    { id: 'media',               label: 'Showreel',    icon: <DockImg src={`${APPS}/quicktime.png`}         alt="Showreel" />,    action: () => openWindow({ id: 'media', type: 'media', title: 'Showreel', x: 180, y: 80, width: 640, height: 400 }) },
+    { id: 'media',               label: 'Showreel',    icon: <DockImg src={`${APPS}/quicktime.png`}         alt="Showreel" />,    action: () => { const reel = files.find(f => f.tags.some(t => t.toLowerCase() === 'reel')); if (reel) useOSStore.getState().openFile(reel); } },
     { id: 'contact',             label: 'Contact',     icon: <DockImg src={`${APPS}/mozilla_mail.png`}      alt="Contact" />,     action: () => openWindow({ id: 'contact', type: 'about', title: 'Contact', x: 260, y: 120, width: 480, height: 340 }) },
     { id: 'github',              label: 'GitHub',      icon: <DockImg src={`${APPS}/mozilla.png`}           alt="GitHub" />,      action: () => window.open('https://github.com/vedwhodesigns', '_blank') },
     { id: 'admin',               label: 'Admin',       icon: <DockImg src={`${APPS}/systempreferences.png`} alt="Admin" />,       action: () => openWindow({ id: 'admin', type: 'admin', title: 'Admin Panel', x: 140, y: 60, width: 740, height: 520 }) },

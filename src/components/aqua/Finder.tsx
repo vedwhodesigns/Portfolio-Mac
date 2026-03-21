@@ -379,7 +379,7 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
                   >
                     {item.type === 'folder'
                       ? <img src={`${PLACES128}/folder-open.png`} alt="folder" width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
-                      : <img src={`${PLACES128}/user-desktop.png`} alt="file" width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
+                      : <img src={FILE_MIME_ICONS[item.fileData.kind] ?? FILE_MIME_ICONS.default} alt={item.fileData.kind} width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
                     }
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {item.type === 'folder' ? item.name : item.fileData.name}

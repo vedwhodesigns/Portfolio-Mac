@@ -8,6 +8,7 @@ import Finder from './Finder';
 import MediaViewer from './MediaViewer';
 import Dock from './Dock';
 import AdminPanel from './AdminPanel';
+import BootScreen from './BootScreen';
 
 // ── Power overlays ─────────────────────────────────────────
 
@@ -105,7 +106,8 @@ function DocumentIcon() {
 // ── AquaDesktop ─────────────────────────────────────────────
 
 export default function AquaDesktop() {
-  const { powerState, setPowerState, windows, openWindow, activeFile, loadFromSupabase } = useOSStore();
+  const { powerState, setPowerState, windows, openWindow, activeFile, files, loadFromSupabase } = useOSStore();
+  const [booted, setBooted] = useState(false);
 
   // Load data from Supabase on mount (falls back to local data if not configured)
   useEffect(() => { loadFromSupabase(); }, [loadFromSupabase]);
@@ -136,7 +138,9 @@ export default function AquaDesktop() {
   ];
 
   return (
-    <div className="aqua-outer-frame">
+    <>
+    {!booted && <BootScreen onComplete={() => setBooted(true)} />}
+    <div className="aqua-outer-frame" style={{ opacity: booted ? 1 : 0, transition: 'opacity 0.6s ease' }}>
       <div className="aqua-frame">
         {/* Wallpaper + all desktop content */}
         <div
@@ -170,22 +174,28 @@ export default function AquaDesktop() {
           </div>
 
           {/* Windows */}
-          {windows.map(win => (
-            <AquaWindow key={win.id} win={win}>
-              {win.type === 'finder' && (
-                <Finder windowId={win.id} initialView={win.finderView ?? 'desktop'} />
-              )}
-              {win.type === 'media' && activeFile && (
-                <MediaViewer file={activeFile} />
-              )}
-              {win.type === 'about' && (
-                <AboutWindow title={win.title} />
-              )}
-              {win.type === 'admin' && (
-                <AdminPanel />
-              )}
-            </AquaWindow>
-          ))}
+          {windows.map(win => {
+            // Each media window resolves its own file via fileId (fixes shared-activeFile bug)
+            const mediaFile = win.type === 'media'
+              ? (files.find(f => f.id === win.fileId) ?? activeFile)
+              : null;
+            return (
+              <AquaWindow key={win.id} win={win}>
+                {win.type === 'finder' && (
+                  <Finder windowId={win.id} initialView={win.finderView ?? 'desktop'} />
+                )}
+                {win.type === 'media' && mediaFile && (
+                  <MediaViewer file={mediaFile} />
+                )}
+                {win.type === 'about' && (
+                  <AboutWindow title={win.title} />
+                )}
+                {win.type === 'admin' && (
+                  <AdminPanel />
+                )}
+              </AquaWindow>
+            );
+          })}
 
           {/* Dock */}
           <Dock />
@@ -203,6 +213,7 @@ export default function AquaDesktop() {
         <div className="crt-overlay" />
       </div>
     </div>
+    </>
   );
 }
 
