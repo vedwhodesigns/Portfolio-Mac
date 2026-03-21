@@ -176,9 +176,12 @@ function DockItem({ label, icon, isActive, onClick }: DockItemProps) {
   }, [dock.hovered, size]);
 
   return (
-    <li
+    // animated.li: width = spring value → pushes siblings apart horizontally.
+    // height is FIXED in CSS (56px) so the shelf never grows.
+    <animated.li
       ref={itemRef}
       className="dock-item"
+      style={{ width: size }}
       onMouseEnter={() => setShowLabel(true)}
       onMouseLeave={() => setShowLabel(false)}
     >
@@ -187,9 +190,8 @@ function DockItem({ label, icon, isActive, onClick }: DockItemProps) {
         {label}
       </span>
 
-      {/* Icon — width & height are the spring value; element genuinely grows,
-          pushing siblings apart in the flex row. align-items:flex-end on the
-          dock-list means growth goes upward. */}
+      {/* Icon — absolutely pinned to bottom of the li.
+          As height grows it overflows upward above the fixed shelf. */}
       <animated.div
         className="dock-item-icon-wrap"
         style={{ width: size, height: size }}
@@ -200,6 +202,6 @@ function DockItem({ label, icon, isActive, onClick }: DockItemProps) {
 
       {/* Active indicator — upward triangle at dock surface */}
       {isActive && <span className="dock-active-dot" />}
-    </li>
+    </animated.li>
   );
 }

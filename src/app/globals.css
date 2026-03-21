@@ -632,37 +632,41 @@ body {
   margin: 0;
   padding: 0;
   gap: 3px;
+  overflow: visible;
 }
 
-/* Each icon slot — no fixed size; the animated child drives its dimensions.
-   dock-list align-items:flex-end means growth goes upward. */
+/* Each icon slot — FIXED height so the shelf never grows.
+   The animated.li width changes push siblings apart horizontally.
+   overflow: visible lets the icon-wrap spill upward. */
 .dock-item {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  height: 56px;          /* shelf height locked */
   flex-shrink: 0;
+  overflow: visible;
 }
 
-/* Icon wrapper — width & height set via @react-spring/web animated.div.
-   Growing width pushes siblings apart; flex-end alignment lifts the icon up. */
+/* Icon wrapper — pinned to the bottom of the li, grows upward.
+   width & height driven by @react-spring/web spring. */
 .dock-item-icon-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
   filter: drop-shadow(0 5px 10px rgba(0,0,0,0.55));
   cursor: pointer;
-  /* spring drives width/height — no CSS transition needed */
   will-change: width, height;
 }
 .dock-item-icon-wrap:active {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
-/* Tooltip — sits above the dock-item's top edge (which grows with icon) */
+/* Tooltip — fixed distance from dock floor, always above the tallest icon (104px max) */
 .dock-item-label {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: 112px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(14,14,14,0.82);
