@@ -149,7 +149,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
   const [phase,     setPhase]    = useState<Phase>('happy-mac');
   const [stepIdx,   setStepIdx]  = useState(0);
   const [progress,  setProgress] = useState(0);
-  const [fadeOut,   setFadeOut]  = useState(false);
 
   // Randomise durations once on mount
   const happyMacMs  = useMemo(() => Math.round(randBetween(3000, 8000)), []);
@@ -187,10 +186,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
 
       if (current >= total) {
         clearInterval(tick);
-        setTimeout(() => {
-          setFadeOut(true);
-          setTimeout(onComplete, 600);
-        }, 400);
+        setTimeout(onComplete, 400);
       }
     }, stepDuration);
 
@@ -216,7 +212,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
 
   // ── Jaguar boot screen ──
   return (
-    <div className={`boot-screen${fadeOut ? ' boot-fadeout' : ''}`}>
+    <div className="boot-screen">
       <div className="boot-panel">
         <div className="boot-apple">
           <AquaAppleLogo />

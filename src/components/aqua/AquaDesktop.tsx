@@ -160,7 +160,7 @@ export default function AquaDesktop() {
   return (
     <>
     {!booted && <BootScreen onComplete={() => { markBooted(); setBooted(true); }} />}
-    <div className="aqua-outer-frame" style={{ opacity: booted ? 1 : 0, transition: 'opacity 0.6s ease' }}>
+    <div className="aqua-outer-frame" style={{ opacity: booted ? 1 : 0 }}>
       <div className="aqua-frame">
         {/* Wallpaper + all desktop content */}
         <div
