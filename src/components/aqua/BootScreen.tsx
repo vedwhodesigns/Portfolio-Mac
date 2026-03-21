@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 const BOOT_STEPS = [
   'Tuning system',
@@ -22,8 +22,10 @@ const BOOT_STEPS = [
   'Starting accounting',
 ];
 
-// 17 steps × 265 ms ≈ 4.5 s running + 0.4 s hold = ~5 s visible before fade
-const STEP_DURATION = 265;
+// Random helpers
+function randBetween(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
 
 // Upload mac-startup.mp3 to Supabase at this path to enable the boot chime
 const STARTUP_SOUND =
@@ -91,19 +93,85 @@ function AquaAppleLogo() {
   );
 }
 
+// ── Happy Mac icon (classic pre-OS X startup) ─────────────
+
+function HappyMacIcon() {
+  return (
+    <svg viewBox="0 0 56 70" width="56" height="70" style={{ imageRendering: 'pixelated' }}>
+      {/* Mac body — platinum beige */}
+      <rect x="4" y="2" width="48" height="58" rx="4" ry="4" fill="#c8c8c8" />
+      <rect x="4" y="2" width="48" height="58" rx="4" ry="4" fill="none" stroke="#888" strokeWidth="1.5" />
+
+      {/* Screen bezel */}
+      <rect x="9" y="7" width="38" height="32" rx="2" ry="2" fill="#555" />
+
+      {/* Screen (dark greenish-gray like CRT) */}
+      <rect x="11" y="9" width="34" height="28" rx="1" ry="1" fill="#2a3a2a" />
+
+      {/* Happy face — white on dark screen */}
+      {/* Eyes */}
+      <rect x="18" y="16" width="5" height="5" fill="#fff" />
+      <rect x="33" y="16" width="5" height="5" fill="#fff" />
+      {/* Mouth — wide smile */}
+      <rect x="17" y="27" width="4" height="3" fill="#fff" />
+      <rect x="21" y="29" width="4" height="3" fill="#fff" />
+      <rect x="25" y="30" width="6" height="3" fill="#fff" />
+      <rect x="31" y="29" width="4" height="3" fill="#fff" />
+      <rect x="35" y="27" width="4" height="3" fill="#fff" />
+
+      {/* Lower body / chin area */}
+      <rect x="4" y="44" width="48" height="10" rx="0" fill="#b8b8b8" />
+      <rect x="4" y="44" width="48" height="1" fill="#999" />
+
+      {/* Disk slot */}
+      <rect x="14" y="48" width="20" height="3" rx="1" fill="#888" />
+
+      {/* Power LED */}
+      <circle cx="40" cy="49" r="2" fill="#5cce5c" />
+
+      {/* Base / stand */}
+      <rect x="16" y="54" width="24" height="6" rx="2" fill="#b8b8b8" />
+      <rect x="16" y="54" width="24" height="1" fill="#999" />
+      <rect x="10" y="59" width="36" height="4" rx="2" fill="#b0b0b0" />
+    </svg>
+  );
+}
+
 // ── BootScreen ────────────────────────────────────────────
+
+type Phase = 'happy-mac' | 'jaguar';
 
 interface BootScreenProps {
   onComplete: () => void;
 }
 
 export default function BootScreen({ onComplete }: BootScreenProps) {
-  const [stepIdx,   setStepIdx]   = useState(0);
-  const [progress,  setProgress]  = useState(0);
-  const [fadeOut,   setFadeOut]   = useState(false);
+  const [phase,     setPhase]    = useState<Phase>('happy-mac');
+  const [stepIdx,   setStepIdx]  = useState(0);
+  const [progress,  setProgress] = useState(0);
+  const [fadeOut,   setFadeOut]  = useState(false);
 
+  // Randomise durations once on mount
+  const happyMacMs  = useMemo(() => Math.round(randBetween(3000, 8000)), []);
+  // Total jaguar visible time (ms): 5000–7000. Reserve 1000ms for hold+fade.
+  const jaguarRunMs = useMemo(() => Math.round(randBetween(5000, 7000)), []);
+  const stepDuration = useMemo(
+    () => Math.round((jaguarRunMs - 1000) / BOOT_STEPS.length),
+    [jaguarRunMs]
+  );
+
+  // Phase 1: Happy Mac
   useEffect(() => {
-    // Try startup chime — silently fails if file not found or browser blocks autoplay
+    const t = setTimeout(() => setPhase('jaguar'), happyMacMs);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Phase 2: Jaguar boot screen
+  useEffect(() => {
+    if (phase !== 'jaguar') return;
+
+    // Try startup chime
     const audio = new Audio(STARTUP_SOUND);
     audio.volume = 0.65;
     audio.play().catch(() => {});
@@ -119,39 +187,44 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
 
       if (current >= total) {
         clearInterval(tick);
-        // 400 ms hold at 100%, then 600 ms CSS fade — total visible ≈ 5 s
         setTimeout(() => {
           setFadeOut(true);
           setTimeout(onComplete, 600);
         }, 400);
       }
-    }, STEP_DURATION);
+    }, stepDuration);
 
     return () => {
       clearInterval(tick);
       audio.pause();
     };
-  // onComplete is stable (set-state callback), safe to omit
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [phase]);
 
+  // ── Happy Mac screen ──
+  if (phase === 'happy-mac') {
+    return (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 9000,
+        background: '#888',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <HappyMacIcon />
+      </div>
+    );
+  }
+
+  // ── Jaguar boot screen ──
   return (
     <div className={`boot-screen${fadeOut ? ' boot-fadeout' : ''}`}>
       <div className="boot-panel">
-        {/* Apple logo */}
         <div className="boot-apple">
           <AquaAppleLogo />
         </div>
-
-        {/* "Mac OS X" title */}
         <div className="boot-title">Mac OS X</div>
-
-        {/* Aqua candy-stripe progress bar */}
         <div className="boot-bar-track">
           <div className="boot-bar-fill" style={{ width: `${progress}%` }} />
         </div>
-
-        {/* Current step label */}
         <div className="boot-step">{BOOT_STEPS[stepIdx]}</div>
       </div>
     </div>
