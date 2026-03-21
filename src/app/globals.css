@@ -634,41 +634,35 @@ body {
   gap: 3px;
 }
 
-/* Each icon slot — width grows with scale (set inline from JS), height fixed.
-   Icons overflow upward out of the shelf via overflow:visible on .aqua-dock. */
+/* Each icon slot — no fixed size; the animated child drives its dimensions.
+   dock-list align-items:flex-end means growth goes upward. */
 .dock-item {
-  width:  56px; /* default; overridden inline to BASE_SIZE * scale */
-  height: 56px; /* NEVER changes — shelf height stays constant */
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   flex-shrink: 0;
-  /* Smooth horizontal expansion pushes siblings apart */
-  transition: width 0.14s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
-/* Icon wrapper — absolutely pinned to bottom-center of li.
-   translateX(-50%) + left:50% = centered. scale() grows upward. */
+/* Icon wrapper — width & height set via @react-spring/web animated.div.
+   Growing width pushes siblings apart; flex-end alignment lifts the icon up. */
 .dock-item-icon-wrap {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width:  56px;
-  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
   filter: drop-shadow(0 5px 10px rgba(0,0,0,0.55));
-  transform-origin: bottom center;
-  /* transform set inline from JS; CSS transition makes it smooth */
-  transition: transform 0.14s cubic-bezier(0.34, 1.4, 0.64, 1);
+  cursor: pointer;
+  /* spring drives width/height — no CSS transition needed */
+  will-change: width, height;
 }
 .dock-item-icon-wrap:active {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
-/* Tooltip — must sit above max-magnified icon (56 × 1.85 ≈ 104 px) */
+/* Tooltip — sits above the dock-item's top edge (which grows with icon) */
 .dock-item-label {
   position: absolute;
-  bottom: 112px;
+  bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
   background: rgba(14,14,14,0.82);
@@ -716,14 +710,15 @@ body {
   background: rgba(255,255,255,0.55);
 }
 
-/* Bounce animation — on the inner content div, independent of the scale transform */
+/* Bounce — react-spring handles the y animation on click in the reference impl.
+   Kept as CSS fallback; applied to .dock-item-icon-wrap */
 @keyframes dock-bounce {
   0%   { transform: translateY(0); }
-  22%  { transform: translateY(-22px); }
-  42%  { transform: translateY(-4px); }
-  60%  { transform: translateY(-14px); }
+  22%  { transform: translateY(-20px); }
+  42%  { transform: translateY(-3px); }
+  60%  { transform: translateY(-13px); }
   76%  { transform: translateY(-2px); }
-  90%  { transform: translateY(-7px); }
+  90%  { transform: translateY(-6px); }
   100% { transform: translateY(0); }
 }
 .dock-bouncing { animation: dock-bounce 0.65s cubic-bezier(0.36,0.07,0.19,0.97); }
