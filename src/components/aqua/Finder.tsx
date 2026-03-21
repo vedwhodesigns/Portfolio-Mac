@@ -137,6 +137,57 @@ function FileIcon({ file, size = 52 }: { file: FileData; size?: number }) {
   return <div style={{ transform: `scale(${size / 52})`, transformOrigin: 'top center' }}><FileSVG kind={file.kind} /></div>;
 }
 
+// ── Finder Sidebar ─────────────────────────────────────────
+
+const SIDEBAR_ITEMS = [
+  { id: 'computer',      label: 'Computer',     iconKey: 'computer' },
+  { id: 'desktop',       label: 'Macintosh HD', iconKey: 'hd' },
+  { id: 'home',          label: 'vedant',       iconKey: 'home' },
+  { id: 'favorites',     label: 'Favorites',    iconKey: 'favorites' },
+  { id: 'applications',  label: 'Applications', iconKey: 'apps' },
+  { id: 'filter-Video',  label: 'Movies',       iconKey: 'video' },
+  { id: 'filter-Image',  label: 'Pictures',     iconKey: 'pictures' },
+  { id: 'filter-PDF',    label: 'Documents',    iconKey: 'docs' },
+];
+
+function FinderSidebar({ currentView, onNavigate }: {
+  currentView: string;
+  onNavigate: (view: string) => void;
+}) {
+  const icons: Record<string, string> = {
+    computer:  `${PLACES128}/computer.png`,
+    hd:        `${CHEETAH}/128x128/devices/drive-harddisk.png`,
+    home:      `${PLACES128}/user-home.png`,
+    favorites: `${APPS128}/gnome-favorites.png`,
+    apps:      `${APPS128}/applications-system.png`,
+    video:     `${PLACES128}/folder-video.png`,
+    pictures:  `${PLACES128}/folder-pictures.png`,
+    docs:      `${PLACES128}/folder-documents.png`,
+  };
+
+  return (
+    <div className="finder-sidebar">
+      <span className="finder-sidebar-label">PLACES</span>
+      {SIDEBAR_ITEMS.map(item => (
+        <button
+          key={item.id + item.label}
+          className={`finder-sidebar-item ${currentView === item.id ? 'selected' : ''}`}
+          onClick={e => { e.stopPropagation(); onNavigate(item.id); }}
+        >
+          <img
+            src={icons[item.iconKey]}
+            alt={item.label}
+            width={16} height={16}
+            style={{ objectFit: 'contain', flexShrink: 0 }}
+            draggable={false}
+          />
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 // ── Finder Component ───────────────────────────────────────
 
 interface FinderProps {
@@ -339,6 +390,10 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
         ))}
       </div>
 
+      {/* ── Body: sidebar + content ── */}
+      <div className="finder-body">
+      <FinderSidebar currentView={currentView} onNavigate={navigateTo} />
+
       {/* ── Content ── */}
       <div className="aqua-finder-content" onClick={() => setSelectedId(null)}>
 
@@ -522,6 +577,7 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
           </div>
         )}
       </div>
+      </div>{/* end finder-body */}
 
       {/* ── Status bar ── */}
       <div className="aqua-finder-statusbar">

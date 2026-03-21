@@ -434,11 +434,74 @@ body {
   font-family: inherit;
 }
 
+/* Finder body: sidebar + content side-by-side */
+.finder-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Finder sidebar — Mac OS X Panther Places panel */
+.finder-sidebar {
+  width: 140px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #d6dce8 0%, #c8cfdc 100%);
+  border-right: 1px solid #9aa3b5;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 0 4px;
+  user-select: none;
+}
+
+.finder-sidebar-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  color: #6b7380;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 8px 2px;
+}
+
+.finder-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 3px 8px;
+  border: none;
+  background: transparent;
+  cursor: default;
+  font-size: 11px;
+  color: #1a1a2e;
+  text-align: left;
+  border-radius: 0;
+  transition: background 0.07s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: inherit;
+}
+.finder-sidebar-item:hover {
+  background: rgba(0, 60, 180, 0.1);
+}
+.finder-sidebar-item.selected {
+  background: linear-gradient(180deg, #4a90d9 0%, #1a5fa8 100%);
+  color: #fff;
+}
+.finder-sidebar-item.selected img {
+  filter: brightness(0) invert(1);
+}
+
 /* Finder content */
 .aqua-finder-content {
   flex: 1;
   overflow: auto;
   background: #fff;
+  min-width: 0;
 }
 
 /* Status bar */
