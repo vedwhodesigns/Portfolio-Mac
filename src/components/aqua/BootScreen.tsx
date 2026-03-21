@@ -22,7 +22,8 @@ const BOOT_STEPS = [
   'Starting accounting',
 ];
 
-const STEP_DURATION = 300; // ms per step — total ~5.1s
+// 17 steps × 265 ms ≈ 4.5 s running + 0.4 s hold = ~5 s visible before fade
+const STEP_DURATION = 265;
 
 // Upload mac-startup.mp3 to Supabase at this path to enable the boot chime
 const STARTUP_SOUND =
@@ -118,10 +119,11 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
 
       if (current >= total) {
         clearInterval(tick);
+        // 400 ms hold at 100%, then 600 ms CSS fade — total visible ≈ 5 s
         setTimeout(() => {
           setFadeOut(true);
-          setTimeout(onComplete, 700);
-        }, 500);
+          setTimeout(onComplete, 600);
+        }, 400);
       }
     }, STEP_DURATION);
 

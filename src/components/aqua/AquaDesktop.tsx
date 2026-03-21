@@ -105,9 +105,29 @@ function DocumentIcon() {
 
 // ── AquaDesktop ─────────────────────────────────────────────
 
+const BOOT_KEY = 'portfolio_last_boot';
+const BOOT_TTL = 5 * 60 * 1000; // 5 minutes in ms
+
+function hasBootedRecently(): boolean {
+  try {
+    const ts = localStorage.getItem(BOOT_KEY);
+    if (!ts) return false;
+    return Date.now() - parseInt(ts, 10) < BOOT_TTL;
+  } catch {
+    return false;
+  }
+}
+
+function markBooted() {
+  try { localStorage.setItem(BOOT_KEY, Date.now().toString()); } catch { /* ignore */ }
+}
+
 export default function AquaDesktop() {
   const { powerState, setPowerState, windows, openWindow, activeFile, files, loadFromSupabase } = useOSStore();
-  const [booted, setBooted] = useState(false);
+  // Skip boot if the user was here within the last 5 minutes
+  const [booted, setBooted] = useState(() =>
+    typeof window !== 'undefined' && hasBootedRecently()
+  );
 
   // Load data from Supabase on mount (falls back to local data if not configured)
   useEffect(() => { loadFromSupabase(); }, [loadFromSupabase]);
@@ -139,7 +159,7 @@ export default function AquaDesktop() {
 
   return (
     <>
-    {!booted && <BootScreen onComplete={() => setBooted(true)} />}
+    {!booted && <BootScreen onComplete={() => { markBooted(); setBooted(true); }} />}
     <div className="aqua-outer-frame" style={{ opacity: booted ? 1 : 0, transition: 'opacity 0.6s ease' }}>
       <div className="aqua-frame">
         {/* Wallpaper + all desktop content */}
