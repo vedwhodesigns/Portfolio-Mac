@@ -225,7 +225,7 @@ export default function AquaDesktop() {
             <SleepOverlay onWake={() => setPowerState('active')} />
           )}
           {powerState === 'shutdown' && (
-            <ShutdownScreen onRestart={() => { setPowerState('active'); }} />
+            <ShutdownScreen onRestart={() => { window.location.reload(); }} />
           )}
         </div>
 
