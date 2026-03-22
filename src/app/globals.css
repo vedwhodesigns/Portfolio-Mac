@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/* ── Lucida Grande — served from Supabase storage ─────────── */
+@font-face {
+  font-family: 'Lucida Grande';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src:
+    url('https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/fonts/lucida-grande/LucidaGrande.woff') format('woff'),
+    url('https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/fonts/lucida-grande/LucidaGrande.ttf')  format('truetype');
+}
+
+@font-face {
+  font-family: 'Lucida Grande';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src:
+    url('https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/fonts/lucida-grande/LucidaGrandeBold.woff') format('woff'),
+    url('https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/fonts/lucida-grande/LucidaGrandeBold.ttf')  format('truetype');
+}
+
 /* ═══════════════════════════════════════════════════════════
    AQUA OS — Global Styles
    Mac OS X Jaguar/Panther (10.1–10.2) authentic recreation
