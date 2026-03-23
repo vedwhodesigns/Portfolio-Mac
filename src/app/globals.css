@@ -973,7 +973,7 @@ body {
   aspect-ratio: 1768 / 1425;
   pointer-events: none;
   user-select: none;
-  z-index: 200;
+  z-index: 0;
   display: block;
   transition:
     width 0.7s cubic-bezier(0.4, 0, 0.2, 1),
