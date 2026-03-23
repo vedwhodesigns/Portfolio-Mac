@@ -954,26 +954,38 @@ body {
   to { opacity: 0; }
 }
 
-/* ── Outer frame background (surrounds the 1152/870 desktop) ─ */
+/* ── Outer frame — monitor photo background ───────────────── */
 .aqua-outer-frame {
   position: fixed;
   inset: 0;
-  background: #111;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #ece9e3; /* warm off-white matching the monitor photo */
+  overflow: hidden;
 }
 
-/* ── Desktop frame — enforces 1152/870 aspect ratio ──────── */
+/* ── Monitor bezel image (on top, pointer-events: none) ────── */
+.monitor-bg {
+  position: absolute;
+  width: 116.93vw;   /* 1768/1512 × 100vw — matches Figma image width */
+  left: -9.92vw;     /* -150/1512 × 100vw — matches Figma offset       */
+  top: -6px;
+  aspect-ratio: 1768 / 1425;
+  pointer-events: none;
+  user-select: none;
+  z-index: 200;
+  display: block;
+}
+
+/* ── Desktop frame — positioned inside the monitor screen ─── */
+/* Screen area (Figma-derived): left≈11%, top≈7%, width≈78%   */
 .aqua-frame {
-  position: relative;
-  width:  min(100vw, calc(100vh * (1152 / 870)));
-  height: min(100vh, calc(100vw * (870 / 1152)));
+  position: absolute;
+  left: 11%;
+  top: 7%;
+  width: 78%;
   aspect-ratio: 1152 / 870;
   overflow: hidden;
-  border-radius: 4px;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 24px 80px rgba(0,0,0,0.9);
   transform: translateZ(0);
+  z-index: 1;
 }
 
 /* ── Film grain — whole frame, very subtle ────────────────── */

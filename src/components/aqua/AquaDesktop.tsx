@@ -86,6 +86,7 @@ function DesktopIcon({ label, icon, selected, onSelect, onOpen }: DesktopIconPro
 
 // ── Storage base URL ───────────────────────────────────────
 const STORAGE    = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const MONITOR_BG = `${STORAGE}/hf_20260323_105059_86aca2e6-b23d-4339-a6ab-fd05465d440b.jpeg`;
 const DEVICES128 = `${STORAGE}/128x128/devices`;
 const MIMES128   = `${STORAGE}/128x128/mimetypes`;
 
@@ -161,6 +162,13 @@ export default function AquaDesktop() {
     <>
     {!booted && <BootScreen onComplete={() => { markBooted(); setBooted(true); }} />}
     <div className="aqua-outer-frame" style={{ opacity: booted ? 1 : 0 }}>
+      {/* Monitor bezel — sits on top of the OS content */}
+      <img
+        className="monitor-bg"
+        src={MONITOR_BG}
+        alt=""
+        draggable={false}
+      />
       <div className="aqua-frame">
         {/* Wallpaper + all desktop content */}
         <div
