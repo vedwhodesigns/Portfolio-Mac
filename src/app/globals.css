@@ -958,34 +958,69 @@ body {
 .aqua-outer-frame {
   position: fixed;
   inset: 0;
-  background: #ece9e3; /* warm off-white matching the monitor photo */
+  background: #ece9e3;
   overflow: hidden;
 }
 
-/* ── Monitor bezel image (on top, pointer-events: none) ────── */
+/* ── Monitor bezel image ───────────────────────────────────── */
+/* Frame 1 (default): Figma image 1768×1425 CSS, offset (-150, -6)    */
+/* Frame 2 (expanded): Figma image 2286×1841 CSS, offset (-387, -168) */
 .monitor-bg {
   position: absolute;
-  width: 116.93vw;   /* 1768/1512 × 100vw — matches Figma image width */
-  left: -9.92vw;     /* -150/1512 × 100vw — matches Figma offset       */
+  width: 116.93vw;
+  left: -9.92vw;
   top: -6px;
   aspect-ratio: 1768 / 1425;
   pointer-events: none;
   user-select: none;
   z-index: 200;
   display: block;
+  transition:
+    width 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+    left  0.7s cubic-bezier(0.4, 0, 0.2, 1),
+    top   0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ── Desktop frame — positioned inside the monitor screen ─── */
-/* Screen area (Figma-derived): left≈11%, top≈7%, width≈78%   */
+/* ── Desktop frame — inside monitor screen ─────────────────── */
+/* State 1: left 12%, top 12%, width 76%  (screen fits snugly)  */
+/* State 2: left  7%, top  1%, width 86%  (nearly full viewport) */
 .aqua-frame {
   position: absolute;
-  left: 11%;
-  top: 7%;
-  width: 78%;
+  left: 12%;
+  top: 12%;
+  width: 76%;
   aspect-ratio: 1152 / 870;
   overflow: hidden;
   transform: translateZ(0);
   z-index: 1;
+  transition:
+    left  0.7s cubic-bezier(0.4, 0, 0.2, 1),
+    top   0.7s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Expanded state (Frame 2) ───────────────────────────────── */
+.monitor-expanded .monitor-bg {
+  width: 151.19vw;  /* 2286/1512 × 100vw */
+  left: -25.60vw;   /* -387/1512 × 100vw */
+  top: -168px;
+}
+.monitor-expanded .aqua-frame {
+  left: 7%;
+  top: 1%;
+  width: 86%;
+}
+
+/* ── Click-to-expand overlay (State 1 only) ─────────────────── */
+.monitor-expand-overlay {
+  position: absolute;
+  left: 12%;
+  top: 12%;
+  width: 76%;
+  aspect-ratio: 1152 / 870;
+  z-index: 50;
+  cursor: pointer;
+  background: transparent;
 }
 
 /* ── Film grain — whole frame, very subtle ────────────────── */

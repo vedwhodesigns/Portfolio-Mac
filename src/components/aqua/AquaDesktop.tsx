@@ -129,9 +129,20 @@ export default function AquaDesktop() {
   const [booted, setBooted] = useState(() =>
     typeof window !== 'undefined' && hasBootedRecently()
   );
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Load data from Supabase on mount (falls back to local data if not configured)
   useEffect(() => { loadFromSupabase(); }, [loadFromSupabase]);
+
+  // Escape collapses back to monitor view
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsExpanded(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const [selectedDesktopIcon, setSelectedDesktopIcon] = useState<string | null>(null);
 
   const handleDesktopClick = useCallback(() => {
@@ -161,14 +172,24 @@ export default function AquaDesktop() {
   return (
     <>
     {!booted && <BootScreen onComplete={() => { markBooted(); setBooted(true); }} />}
-    <div className="aqua-outer-frame" style={{ opacity: booted ? 1 : 0 }}>
-      {/* Monitor bezel — sits on top of the OS content */}
+    <div className={`aqua-outer-frame${isExpanded ? ' monitor-expanded' : ''}`} style={{ opacity: booted ? 1 : 0 }}>
+      {/* Monitor bezel — sits on top of the OS, animates between two Figma states */}
       <img
         className="monitor-bg"
         src={MONITOR_BG}
         alt=""
         draggable={false}
       />
+
+      {/* Click overlay — only active in collapsed state, expands on click */}
+      {!isExpanded && (
+        <div
+          className="monitor-expand-overlay"
+          onClick={() => setIsExpanded(true)}
+          title="Click to expand"
+        />
+      )}
+
       <div className="aqua-frame">
         {/* Wallpaper + all desktop content */}
         <div
