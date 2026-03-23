@@ -1009,20 +1009,24 @@ body {
 }
 
 /* ── Monitor image ─────────────────────────────────────────── */
-/* All offsets in vw so they scale proportionally with viewport  */
-/* Image aspect: 4608/3712 → height = width × 0.8056            */
-/*                                                               */
-/* Desktop  collapsed: 135vw / -20vw / -11.2vw (-170px@1512px)  */
-/* Desktop  expanded:  171vw / -35vw / -23.7vw (-358px@1512px)  */
-/* iPad ls  collapsed: 150vw / -25vw /  -9.8vw (-100px@1024px)  */
-/* iPad ls  expanded:  170vw / -35vw / -16.1vw (-165px@1024px)  */
-/* iPad pt  collapsed: 165vw / -33vw /  -1.0vw   (-8px@768px)   */
-/* iPad pt  expanded:  190vw / -45vw / -26.7vw (-205px@768px)   */
+/* Strategy: anchor image center to viewport center (left:50%,  */
+/* top:50%, translate -50%/-50%), then offset with vw+vh.       */
+/* vw handles horizontal (scales w/ width),                     */
+/* vh handles vertical  (scales w/ height).                     */
+/* This gives consistent appearance on any screen aspect ratio. */
+/*                                                              */
+/* Desktop  collapsed: 135vw, center offset (-2.5vw, +16.5vh)  */
+/* Desktop  expanded:  171vw, center offset (+0.5vw, +19.6vh)  */
+/* iPad ls  collapsed: 150vw, center offset (    0,  +17.6vh)  */
+/* iPad ls  expanded:  170vw, center offset (    0,  +19.8vh)  */
+/* iPad pt  collapsed: 165vw, center offset (-0.4vw,  -1.0vh)  */
+/* iPad pt  expanded:  190vw, center offset (    0,  -12.7vh)  */
 .monitor-bg {
   position: absolute;
   width: 135vw;
-  left: -20vw;
-  top: -11.2vw;
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(-50% - 2.5vw), calc(-50% + 16.5vh));
   max-width: none;
   aspect-ratio: 4608 / 3712;
   pointer-events: none;
@@ -1030,22 +1034,19 @@ body {
   z-index: 0;
   display: block;
   transition:
-    width 0.8s ease,
-    left  0.8s ease,
-    top   0.8s ease;
+    width     0.8s ease,
+    transform 0.8s ease;
 }
 
 /* iPad landscape (641px–1024px) */
 @media (max-width: 1024px) and (min-width: 641px) and (orientation: landscape) {
   .monitor-bg {
     width: 150vw;
-    left: -25vw;
-    top: -9.8vw;
+    transform: translate(-50%, calc(-50% + 17.6vh));
   }
   .monitor-expanded .monitor-bg {
     width: 170vw;
-    left: -35vw;
-    top: -16.1vw;
+    transform: translate(-50%, calc(-50% + 19.8vh));
   }
 }
 
@@ -1053,13 +1054,11 @@ body {
 @media (max-width: 1024px) and (min-width: 641px) and (orientation: portrait) {
   .monitor-bg {
     width: 165vw;
-    left: -33vw;
-    top: -1vw;
+    transform: translate(calc(-50% - 0.4vw), calc(-50% - 1vh));
   }
   .monitor-expanded .monitor-bg {
     width: 190vw;
-    left: -45vw;
-    top: -26.7vw;
+    transform: translate(-50%, calc(-50% - 12.7vh));
   }
 }
 
@@ -1071,8 +1070,7 @@ body {
 /* ── Expanded state (Frame 2) ───────────────────────────────── */
 .monitor-expanded .monitor-bg {
   width: 171vw;
-  left: -35vw;
-  top: -23.7vw;
+  transform: translate(calc(-50% + 0.5vw), calc(-50% + 19.6vh));
 }
 .monitor-expanded .aqua-frame { display: none; }
 
