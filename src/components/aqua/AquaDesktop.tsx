@@ -171,6 +171,18 @@ export default function AquaDesktop() {
 
   return (
     <>
+    {/* Mobile gate — shown only on small screens */}
+    <div className="mobile-gate">
+      <div className="mobile-gate-inner">
+        <div className="mobile-gate-icon">🖥️</div>
+        <h1 className="mobile-gate-title">Best viewed on desktop</h1>
+        <p className="mobile-gate-body">
+          This portfolio is a Mac OS X experience.<br />
+          Open it on a laptop or desktop for the full version.
+        </p>
+      </div>
+    </div>
+
     {!booted && <BootScreen onComplete={() => { markBooted(); setBooted(true); }} />}
     <div className={`aqua-outer-frame${isExpanded ? ' monitor-expanded' : ''}`} style={{ opacity: booted ? 1 : 0 }}>
       {/* Monitor bezel — sits on top of the OS, animates between two Figma states */}

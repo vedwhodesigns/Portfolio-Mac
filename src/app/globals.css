@@ -954,6 +954,52 @@ body {
   to { opacity: 0; }
 }
 
+/* ── Mobile gate — shown on phones, hides everything else ──── */
+.mobile-gate {
+  display: none;
+}
+@media (max-width: 640px) {
+  .mobile-gate {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #1a1a1a;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+  }
+  /* Hide everything else on mobile */
+  .boot-screen,
+  .aqua-outer-frame {
+    display: none !important;
+  }
+}
+.mobile-gate-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 320px;
+}
+.mobile-gate-icon {
+  font-size: 56px;
+  line-height: 1;
+}
+.mobile-gate-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+.mobile-gate-body {
+  font-size: 14px;
+  color: #999;
+  line-height: 1.6;
+  margin: 0;
+}
+
 /* ── Outer frame — monitor photo background ───────────────── */
 .aqua-outer-frame {
   position: fixed;
@@ -963,8 +1009,10 @@ body {
 }
 
 /* ── Monitor image ─────────────────────────────────────────── */
-/* Frame 1 (default):  135vw / -20vw  / -170px                 */
-/* Frame 2 (expanded): 171vw / -35vw  / -358px                 */
+/* Desktop  collapsed: 135vw / -20vw / -170px                  */
+/* Desktop  expanded:  171vw / -35vw / -358px                  */
+/* iPad     collapsed: 150vw / -25vw / -100px                  */
+/* iPad     expanded:  170vw / -35vw / -165px                  */
 .monitor-bg {
   position: absolute;
   width: 135vw;
@@ -980,6 +1028,34 @@ body {
     width 0.8s ease,
     left  0.8s ease,
     top   0.8s ease;
+}
+
+/* iPad landscape (641px–1024px) */
+@media (max-width: 1024px) and (min-width: 641px) and (orientation: landscape) {
+  .monitor-bg {
+    width: 150vw;
+    left: -25vw;
+    top: -100px;
+  }
+  .monitor-expanded .monitor-bg {
+    width: 170vw;
+    left: -35vw;
+    top: -165px;
+  }
+}
+
+/* iPad portrait (641px–1024px) */
+@media (max-width: 1024px) and (min-width: 641px) and (orientation: portrait) {
+  .monitor-bg {
+    width: 165vw;
+    left: -33vw;
+    top: -8px;
+  }
+  .monitor-expanded .monitor-bg {
+    width: 190vw;
+    left: -45vw;
+    top: -205px;
+  }
 }
 
 /* ── Desktop frame — DISABLED while reframing image ─────────── */
