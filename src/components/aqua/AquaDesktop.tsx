@@ -181,14 +181,19 @@ export default function AquaDesktop() {
         draggable={false}
       />
 
-      {/* Click overlay — only active in collapsed state, expands on click */}
-      {!isExpanded && (
-        <div
-          className="monitor-expand-overlay"
-          onClick={() => setIsExpanded(true)}
-          title="Click to expand"
-        />
-      )}
+      {/* TEST BUTTON — remove once OS is re-enabled */}
+      <button
+        onClick={() => setIsExpanded(e => !e)}
+        style={{
+          position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
+          background: 'rgba(0,0,0,0.7)', color: '#fff',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: 8, padding: '8px 16px',
+          fontSize: 13, cursor: 'pointer', backdropFilter: 'blur(8px)',
+        }}
+      >
+        {isExpanded ? 'Collapse' : 'Expand'}
+      </button>
 
       <div className="aqua-frame">
         {/* Wallpaper + all desktop content */}

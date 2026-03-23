@@ -962,27 +962,24 @@ body {
   overflow: hidden;
 }
 
-/* ── Monitor image positioning — tweak these two vars ─────── */
-/* --mon-w : how wide the image is (e.g. 100vw, 120vw, 80%)   */
-/* --mon-x : horizontal offset from left  (e.g. 0vw, -10vw)   */
-/* --mon-y : vertical offset from top     (e.g. 0px, -40px)    */
-.aqua-outer-frame {
-  --mon-w: 100vw;
-  --mon-x: 0vw;
-  --mon-y: 0px;
-}
-
+/* ── Monitor image ─────────────────────────────────────────── */
+/* Frame 1 (default):  135vw / -20vw  / -170px                 */
+/* Frame 2 (expanded): 171vw / -35vw  / -358px                 */
 .monitor-bg {
   position: absolute;
-  width: var(--mon-w);
-  max-width: none; /* override Tailwind's img { max-width: 100% } */
-  left: var(--mon-x);
-  top: var(--mon-y);
-  aspect-ratio: 4608 / 3712; /* actual image pixel ratio */
+  width: 135vw;
+  left: -20vw;
+  top: -170px;
+  max-width: none;
+  aspect-ratio: 4608 / 3712;
   pointer-events: none;
   user-select: none;
   z-index: 0;
   display: block;
+  transition:
+    width 0.8s ease,
+    left  0.8s ease,
+    top   0.8s ease;
 }
 
 /* ── Desktop frame — DISABLED while reframing image ─────────── */
@@ -990,11 +987,15 @@ body {
   display: none;
 }
 
-/* ── Expanded state — DISABLED while reframing ──────────────── */
-.monitor-expanded .monitor-bg {}
+/* ── Expanded state (Frame 2) ───────────────────────────────── */
+.monitor-expanded .monitor-bg {
+  width: 171vw;
+  left: -35vw;
+  top: -358px;
+}
 .monitor-expanded .aqua-frame { display: none; }
 
-/* ── Click overlay — DISABLED while reframing ───────────────── */
+/* ── Click overlay — disabled until OS is re-enabled ────────── */
 .monitor-expand-overlay { display: none; }
 
 /* ── Film grain — whole frame, very subtle ────────────────── */
