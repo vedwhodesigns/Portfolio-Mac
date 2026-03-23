@@ -1009,15 +1009,20 @@ body {
 }
 
 /* ── Monitor image ─────────────────────────────────────────── */
-/* Desktop  collapsed: 135vw / -20vw / -170px                  */
-/* Desktop  expanded:  171vw / -35vw / -358px                  */
-/* iPad     collapsed: 150vw / -25vw / -100px                  */
-/* iPad     expanded:  170vw / -35vw / -165px                  */
+/* All offsets in vw so they scale proportionally with viewport  */
+/* Image aspect: 4608/3712 → height = width × 0.8056            */
+/*                                                               */
+/* Desktop  collapsed: 135vw / -20vw / -11.2vw (-170px@1512px)  */
+/* Desktop  expanded:  171vw / -35vw / -23.7vw (-358px@1512px)  */
+/* iPad ls  collapsed: 150vw / -25vw /  -9.8vw (-100px@1024px)  */
+/* iPad ls  expanded:  170vw / -35vw / -16.1vw (-165px@1024px)  */
+/* iPad pt  collapsed: 165vw / -33vw /  -1.0vw   (-8px@768px)   */
+/* iPad pt  expanded:  190vw / -45vw / -26.7vw (-205px@768px)   */
 .monitor-bg {
   position: absolute;
   width: 135vw;
   left: -20vw;
-  top: -170px;
+  top: -11.2vw;
   max-width: none;
   aspect-ratio: 4608 / 3712;
   pointer-events: none;
@@ -1035,12 +1040,12 @@ body {
   .monitor-bg {
     width: 150vw;
     left: -25vw;
-    top: -100px;
+    top: -9.8vw;
   }
   .monitor-expanded .monitor-bg {
     width: 170vw;
     left: -35vw;
-    top: -165px;
+    top: -16.1vw;
   }
 }
 
@@ -1049,12 +1054,12 @@ body {
   .monitor-bg {
     width: 165vw;
     left: -33vw;
-    top: -8px;
+    top: -1vw;
   }
   .monitor-expanded .monitor-bg {
     width: 190vw;
     left: -45vw;
-    top: -205px;
+    top: -26.7vw;
   }
 }
 
@@ -1067,7 +1072,7 @@ body {
 .monitor-expanded .monitor-bg {
   width: 171vw;
   left: -35vw;
-  top: -358px;
+  top: -23.7vw;
 }
 .monitor-expanded .aqua-frame { display: none; }
 
