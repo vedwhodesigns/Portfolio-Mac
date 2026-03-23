@@ -962,15 +962,22 @@ body {
   overflow: hidden;
 }
 
-/* ── Monitor bezel image ───────────────────────────────────── */
-/* TODO: reframe positions once image is set correctly          */
+/* ── Monitor image positioning — tweak these two vars ─────── */
+/* --mon-w : how wide the image is (e.g. 100vw, 120vw, 80%)   */
+/* --mon-x : horizontal offset from left  (e.g. 0vw, -10vw)   */
+/* --mon-y : vertical offset from top     (e.g. 0px, -40px)    */
+.aqua-outer-frame {
+  --mon-w: 100vw;
+  --mon-x: 0vw;
+  --mon-y: 0px;
+}
+
 .monitor-bg {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center center;
+  width: var(--mon-w);
+  left: var(--mon-x);
+  top: var(--mon-y);
+  aspect-ratio: 4608 / 3712; /* actual image pixel ratio */
   pointer-events: none;
   user-select: none;
   z-index: 0;
