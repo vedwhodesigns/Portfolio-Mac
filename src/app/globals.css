@@ -975,6 +975,7 @@ body {
 .monitor-bg {
   position: absolute;
   width: var(--mon-w);
+  max-width: none; /* override Tailwind's img { max-width: 100% } */
   left: var(--mon-x);
   top: var(--mon-y);
   aspect-ratio: 4608 / 3712; /* actual image pixel ratio */
