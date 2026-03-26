@@ -16,7 +16,7 @@ function SleepOverlay({ onWake }: { onWake: () => void }) {
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
+        position: 'absolute', inset: 0, zIndex: 9999,
         background: '#000',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer',
@@ -47,7 +47,7 @@ function ShutdownScreen({ onRestart }: { onRestart: () => void }) {
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
+        position: 'absolute', inset: 0, zIndex: 9999,
         background: '#000',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer',
@@ -86,7 +86,8 @@ function DesktopIcon({ label, icon, selected, onSelect, onOpen }: DesktopIconPro
 
 // ── Storage base URL ───────────────────────────────────────
 const STORAGE    = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
-const MONITOR_BG = `${STORAGE}/hf_20260323_105059_86aca2e6-b23d-4339-a6ab-fd05465d440b.jpeg`;
+// iMac PNG — 4608×3712 RGBA, screen area is transparent (alpha cutout).
+const MONITOR_OVERLAY = `${STORAGE}/hf_20260323_105059_86aca2e6-b23d-4339-a6ab-fd05465d440b.png`;
 const DEVICES128 = `${STORAGE}/128x128/devices`;
 const MIMES128   = `${STORAGE}/128x128/mimetypes`;
 
@@ -129,19 +130,8 @@ export default function AquaDesktop() {
   const [booted, setBooted] = useState(() =>
     typeof window !== 'undefined' && hasBootedRecently()
   );
-  const [isExpanded, setIsExpanded] = useState(false);
-
   // Load data from Supabase on mount (falls back to local data if not configured)
   useEffect(() => { loadFromSupabase(); }, [loadFromSupabase]);
-
-  // Escape collapses back to monitor view
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsExpanded(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
 
   const [selectedDesktopIcon, setSelectedDesktopIcon] = useState<string | null>(null);
 
@@ -183,31 +173,17 @@ export default function AquaDesktop() {
       </div>
     </div>
 
-    {!booted && <BootScreen onComplete={() => { markBooted(); setBooted(true); }} />}
-    <div className={`aqua-outer-frame${isExpanded ? ' monitor-expanded' : ''}`} style={{ opacity: booted ? 1 : 0 }}>
-      {/* Monitor bezel — sits on top of the OS, animates between two Figma states */}
-      <img
-        className="monitor-bg"
-        src={MONITOR_BG}
-        alt=""
-        draggable={false}
-      />
+    <div className="aqua-outer-frame">
 
-      {/* TEST BUTTON — remove once OS is re-enabled */}
-      <button
-        onClick={() => setIsExpanded(e => !e)}
-        style={{
-          position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
-          background: 'rgba(0,0,0,0.7)', color: '#fff',
-          border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: 8, padding: '8px 16px',
-          fontSize: 13, cursor: 'pointer', backdropFilter: 'blur(8px)',
-        }}
-      >
-        {isExpanded ? 'Collapse' : 'Expand'}
-      </button>
+      {/* Monitor wrapper — aspect-ratio container that holds the iMac image.
+          The OS lives inside this, clipped to the screen rect.
+          The PNG overlay (bezel with transparent screen) sits on top. */}
+      <div className="monitor-wrapper">
 
-      <div className="aqua-frame">
+        {/* Layer 1: OS UI — clipped to the screen rect via .aqua-frame */}
+        <div className="aqua-frame aqua-frame--debug">
+        {/* Boot screen — inside the screen, not full-viewport */}
+        {!booted && <BootScreen onComplete={() => { markBooted(); setBooted(true); }} />}
         {/* Wallpaper + all desktop content */}
         <div
           className="aqua-wallpaper"
@@ -275,9 +251,19 @@ export default function AquaDesktop() {
           )}
         </div>
 
-        {/* CRT Scanlines — on top of everything */}
+        {/* CRT Scanlines — on top of everything inside the screen */}
         <div className="crt-overlay" />
-      </div>
+        </div>{/* end .aqua-frame */}
+
+        {/* Layer 2: iMac G4 PNG overlay — bezel with transparent screen hole.
+            pointer-events: none so the UI behind remains fully interactive. */}
+        <img
+          className="monitor-overlay"
+          src={MONITOR_OVERLAY}
+          alt=""
+          draggable={false}
+        />
+      </div>{/* end .monitor-wrapper */}
     </div>
     </>
   );

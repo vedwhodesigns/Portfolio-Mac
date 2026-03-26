@@ -201,7 +201,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
   if (phase === 'happy-mac') {
     return (
       <div style={{
-        position: 'fixed', inset: 0, zIndex: 9000,
+        position: 'absolute', inset: 0, zIndex: 9000,
         background: '#888',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>

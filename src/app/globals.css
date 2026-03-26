@@ -817,7 +817,7 @@ body {
 
 /* Full-viewport overlay — sits above everything */
 .boot-screen {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 999999;
   background: #4d6ea8;   /* classic Jaguar boot cornflower blue */
@@ -1000,85 +1000,53 @@ body {
   margin: 0;
 }
 
-/* ── Outer frame — monitor photo background ───────────────── */
+/* ── Outer frame ──────────────────────────────────────────── */
 .aqua-outer-frame {
   position: fixed;
   inset: 0;
-  background: #ece9e3;
+  /* Neutral desk-like background visible around the iMac */
+  background: radial-gradient(ellipse at 50% 80%, #d8d4cc 0%, #c8c4bc 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
 }
 
-/* ── Monitor image ─────────────────────────────────────────── */
-/* Strategy: anchor image center to viewport center (left:50%,  */
-/* top:50%, translate -50%/-50%), then offset with vw+vh.       */
-/* vw handles horizontal (scales w/ width),                     */
-/* vh handles vertical  (scales w/ height).                     */
-/* This gives consistent appearance on any screen aspect ratio. */
+/* ── Monitor wrapper ──────────────────────────────────────── */
+/* PNG dimensions: 4608 × 3712 (landscape, RGBA).             */
+/* The iMac sits within a desk/room scene in this image.      */
+/* We size the wrapper to fill the viewport and let the image  */
+/* scale naturally — screen rect is tuned as % of wrapper.    */
+.monitor-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+/* ── OS UI — sits at the screen rect inside the wrapper ────── */
 /*                                                              */
-/* Desktop  collapsed: 135vw, center offset (-2.5vw, +16.5vh)  */
-/* Desktop  expanded:  171vw, center offset (+0.5vw, +19.6vh)  */
-/* iPad ls  collapsed: 150vw, center offset (    0,  +17.6vh)  */
-/* iPad ls  expanded:  170vw, center offset (    0,  +19.8vh)  */
-/* iPad pt  collapsed: 165vw, center offset (-0.4vw,  -1.0vh)  */
-/* iPad pt  expanded:  190vw, center offset (    0,  -12.7vh)  */
-.monitor-bg {
-  position: absolute;
-  width: 135vw;
-  left: 50%;
-  top: 50%;
-  transform: translate(calc(-50% - 2.5vw), calc(-50% + 16.5vh));
-  max-width: none;
-  aspect-ratio: 4608 / 3712;
-  pointer-events: none;
-  user-select: none;
-  z-index: 0;
-  display: block;
-  transition:
-    width     0.8s ease,
-    transform 0.8s ease;
-}
-
-/* iPad landscape (641px–1024px) */
-@media (max-width: 1024px) and (min-width: 641px) and (orientation: landscape) {
-  .monitor-bg {
-    width: 150vw;
-    transform: translate(-50%, calc(-50% + 17.6vh));
-  }
-  .monitor-expanded .monitor-bg {
-    width: 170vw;
-    transform: translate(-50%, calc(-50% + 19.8vh));
-  }
-}
-
-/* iPad portrait (641px–1024px) */
-@media (max-width: 1024px) and (min-width: 641px) and (orientation: portrait) {
-  .monitor-bg {
-    width: 165vw;
-    transform: translate(calc(-50% - 0.4vw), calc(-50% - 1vh));
-  }
-  .monitor-expanded .monitor-bg {
-    width: 190vw;
-    transform: translate(-50%, calc(-50% - 12.7vh));
-  }
-}
-
-/* ── Desktop frame — DISABLED while reframing image ─────────── */
+/* TUNING: run the dev server, enable .aqua-frame--debug below */
+/* to see a red outline of the screen rect. Adjust left/top/   */
+/* width/height until the red box aligns with the iMac screen. */
+/*                                                             */
+/* Values are % of the monitor-wrapper (= % of PNG dimensions) */
 .aqua-frame {
-  display: none;
+  position: absolute;
+  left:   30%;
+  top:    10%;
+  width:  40%;
+  height: 55%;
+  overflow: hidden;
+  isolation: isolate;
 }
 
-/* ── Expanded state (Frame 2) ───────────────────────────────── */
-.monitor-expanded .monitor-bg {
-  width: 171vw;
-  transform: translate(calc(-50% + 0.5vw), calc(-50% + 19.6vh));
+/* ── Debug helper — add class "aqua-frame--debug" in JSX to   */
+/* see the screen rect as a red outline while tuning.          */
+.aqua-frame--debug {
+  outline: 3px solid red;
+  outline-offset: -3px;
 }
-.monitor-expanded .aqua-frame { display: none; }
-
-/* ── Click overlay — disabled until OS is re-enabled ────────── */
-.monitor-expand-overlay { display: none; }
-
-/* ── Film grain — whole frame, very subtle ────────────────── */
-/* Applied as a tiled SVG noise via ::before on the frame */
 .aqua-frame::before {
   content: '';
   position: absolute;
@@ -1088,6 +1056,22 @@ body {
   opacity: 1;
   background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23g)' opacity='0.045'/></svg>");
   background-size: 200px 200px;
+}
+
+/* ── Monitor PNG overlay — bezel with transparent screen ───── */
+/* Covers the full wrapper. pointer-events:none keeps UI clickable. */
+/* object-fit:cover fills the frame; object-position centers iMac. */
+.monitor-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  pointer-events: none;
+  user-select: none;
+  z-index: 9999;
+  display: block;
 }
 
 /* ── CRT overlay — disabled; scanlines live on dock + bars only */
