@@ -137,7 +137,7 @@ export default function AquaDesktop() {
 
   return (
     <div
-      className="aqua-wallpaper"
+      className="aqua-wallpaper aqua-desktop"
       style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}
       onClick={handleDesktopClick}
     >

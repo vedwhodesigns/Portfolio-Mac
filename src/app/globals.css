@@ -8,12 +8,11 @@
 /* ── Reset ────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 button { cursor: default; font-family: inherit; }
-body { margin: 0; overflow: hidden; }
+body { margin: 0; -webkit-font-smoothing: antialiased; }
 
-/* ── Font ─────────────────────────────────────────────────── */
-body {
+/* ── Aqua font (scoped to the OS) ─────────────────────────── */
+.aqua-desktop, .aqua-menubar, .aqua-window, .aqua-dock {
   font-family: 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  -webkit-font-smoothing: antialiased;
 }
 
 /* ── Wallpaper — Mac OS X Jaguar "Aqua Blue" ─────────────── */

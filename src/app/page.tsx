@@ -1,5 +1,5 @@
-import AquaDesktop from "@/components/aqua/AquaDesktop";
+import HorizontalSite from "@/components/shelf/HorizontalSite";
 
 export default function Home() {
-  return <AquaDesktop />;
+  return <HorizontalSite />;
 }

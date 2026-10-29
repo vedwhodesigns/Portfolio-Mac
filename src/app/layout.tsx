@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./shelf.css";
 
 export const metadata: Metadata = {
-  title: "Portfolio — Aqua OS",
-  description: "CGI, VFX & Graphic Design Portfolio",
+  title: "Vedant Parikh — Portfolio",
+  description: "CGI, VFX & Graphic Design — branding, logo design and visual effects by Vedant Parikh.",
 };
 
 export default function RootLayout({
@@ -13,9 +14,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, overflow: 'hidden', fontFamily: '-apple-system, "Lucida Grande", "Helvetica Neue", sans-serif' }}>
-        {children}
-      </body>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>{children}</body>
     </html>
   );
 }
