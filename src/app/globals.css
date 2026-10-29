@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/* ── Lucida Grande — served from Supabase storage ─────────── */
+@font-face {
+  font-family: 'Lucida Grande';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src:
+    url('https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/fonts/lucida-grande/LucidaGrande.woff') format('woff'),
+    url('https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/fonts/lucida-grande/LucidaGrande.ttf')  format('truetype');
+}
+
+@font-face {
+  font-family: 'Lucida Grande';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src:
+    url('https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/fonts/lucida-grande/LucidaGrandeBold.woff') format('woff'),
+    url('https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media/fonts/lucida-grande/LucidaGrandeBold.ttf')  format('truetype');
+}
+
 /* ═══════════════════════════════════════════════════════════
    AQUA OS — Global Styles
    Mac OS X Jaguar/Panther (10.1–10.2) authentic recreation
@@ -10,9 +31,11 @@
 button { cursor: default; font-family: inherit; }
 body { margin: 0; -webkit-font-smoothing: antialiased; }
 
-/* ── Aqua font (scoped to the OS) ─────────────────────────── */
-.aqua-desktop, .aqua-menubar, .aqua-window, .aqua-dock {
+/* ── Aqua font (scoped to the OS; the shelf site uses its own fonts) ── */
+/* Lucida Grande: native on macOS/iOS, loaded from cdnfonts.com on other platforms */
+.aqua-desktop, .aqua-outer-frame, .mobile-gate, .aqua-menubar, .aqua-window, .aqua-dock {
   font-family: 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ── Wallpaper — Mac OS X Jaguar "Aqua Blue" ─────────────── */
@@ -36,17 +59,16 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
   align-items: center;
   justify-content: space-between;
   padding: 0 2px;
-  background:
-    linear-gradient(180deg,
-      rgba(242,242,242,0.98) 0%,
-      rgba(212,212,212,0.98) 45%,
-      rgba(200,200,200,0.98) 55%,
-      rgba(218,218,218,0.98) 100%
-    );
-  border-bottom: 1px solid rgba(0,0,0,0.4);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.18);
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.99) 0%,
+    rgba(238,238,238,0.99) 40%,
+    rgba(224,224,224,0.99) 55%,
+    rgba(236,236,236,0.99) 100%
+  );
+  border-bottom: 1px solid rgba(0,0,0,0.45);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 1px 3px rgba(0,0,0,0.15);
 }
-/* Pinstripe on menu bar */
+/* Pinstripe + slight gloss on menu bar */
 .aqua-menubar::after {
   content: '';
   position: absolute;
@@ -54,8 +76,8 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
   pointer-events: none;
   background: repeating-linear-gradient(
     180deg,
-    transparent 0px, transparent 1px,
-    rgba(255,255,255,0.22) 1px, rgba(255,255,255,0.22) 2px
+    rgba(255,255,255,0.18) 0px, rgba(255,255,255,0.18) 1px,
+    transparent 1px, transparent 2px
   );
 }
 
@@ -76,6 +98,7 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
   position: relative;
   z-index: 1;
   user-select: none;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.85);
 }
 .menubar-item:hover,
 .menubar-item.open {
@@ -95,7 +118,7 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
   border-radius: 0 0 5px 5px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.14);
   padding: 4px 0;
-  min-width: 180px;
+  min-width: 180px; /* overridden inline for narrow dropdowns like volume */
 }
 .aqua-dropdown-above {
   border-radius: 5px 5px 0 0;
@@ -431,11 +454,74 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
   font-family: inherit;
 }
 
+/* Finder body: sidebar + content side-by-side */
+.finder-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Finder sidebar — Mac OS X Panther Places panel */
+.finder-sidebar {
+  width: 140px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #d6dce8 0%, #c8cfdc 100%);
+  border-right: 1px solid #9aa3b5;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 0 4px;
+  user-select: none;
+}
+
+.finder-sidebar-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  color: #6b7380;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 8px 2px;
+}
+
+.finder-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 3px 8px;
+  border: none;
+  background: transparent;
+  cursor: default;
+  font-size: 11px;
+  color: #1a1a2e;
+  text-align: left;
+  border-radius: 0;
+  transition: background 0.07s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: inherit;
+}
+.finder-sidebar-item:hover {
+  background: rgba(0, 60, 180, 0.1);
+}
+.finder-sidebar-item.selected {
+  background: linear-gradient(180deg, #4a90d9 0%, #1a5fa8 100%);
+  color: #fff;
+}
+.finder-sidebar-item.selected img {
+  filter: brightness(0) invert(1);
+}
+
 /* Finder content */
 .aqua-finder-content {
   flex: 1;
   overflow: auto;
   background: #fff;
+  min-width: 0;
 }
 
 /* Status bar */
@@ -578,147 +664,129 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
   transform: translateX(-50%);
   z-index: 8000;
   display: flex;
-  align-items: flex-end;     /* all items anchor to the bottom edge */
-  padding: 6px 14px 0;
-  gap: 2px;
+  padding: 8px 16px 0;
 
-  /* Mac OS X Jaguar frosted glass shelf */
+  /* Metallic aluminum — no rounded corners, no frosted glass */
+  border-radius: 0;
   background: linear-gradient(180deg,
-    rgba(210,225,248,0.55) 0%,
-    rgba(170,190,230,0.68) 50%,
-    rgba(130,155,205,0.82) 100%
+    #d8d8da 0%,
+    #c4c4c8 35%,
+    #b8b8bc 70%,
+    #b2b2b6 100%
   );
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.45);
+  border-top:   1px solid rgba(255,255,255,0.80);
+  border-left:  1px solid rgba(0,0,0,0.32);
+  border-right: 1px solid rgba(0,0,0,0.32);
   border-bottom: none;
-  backdrop-filter: blur(24px) saturate(1.8);
-  -webkit-backdrop-filter: blur(24px) saturate(1.8);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.55),
-    0 -1px 16px rgba(0,0,0,0.22),
-    0 0 48px rgba(0,0,0,0.3);
+  box-shadow: 0 -4px 18px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.5);
+  /* NO backdrop-filter — original dock was opaque */
+  /* Must be visible so icons can overflow upward above the shelf */
+  overflow: visible;
 }
 
-/* Top gloss line */
+/* Scanlines on dock shelf only (2 px pitch, clearly visible in screenshot) */
 .aqua-dock::before {
   content: '';
   position: absolute;
-  top: 0; left: 10px; right: 10px;
-  height: 1.5px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255,255,255,0.9) 20%,
-    rgba(255,255,255,1)   50%,
-    rgba(255,255,255,0.9) 80%,
-    transparent 100%
-  );
+  inset: 0;
   pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent       0px, transparent       1px,
+    rgba(0,0,0,0.07)  1px, rgba(0,0,0,0.07)  2px
+  );
 }
 
-/* Inner gloss sheen */
+/* Top-edge highlight line */
 .aqua-dock::after {
   content: '';
   position: absolute;
-  top: 1px; left: 0; right: 0; height: 38%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 100%);
-  border-radius: 12px 12px 0 0;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: rgba(255,255,255,0.85);
   pointer-events: none;
 }
 
-/* Each icon slot — bottom-aligned so icons grow upward */
-.dock-item {
+/* Flat list inside the dock */
+.dock-list {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  position: relative;
-  --icon-size: 56px;
+  align-items: flex-end;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 3px;
+  overflow: visible;
 }
 
-/* CSS magnification — sibling hover ripple + directional lean */
-.dock-item:hover                          { --icon-size: 100px; }
-.dock-item:hover + .dock-item             { --icon-size: calc(80px + var(--dock-offset-right, 0px)); }
-.dock-item:hover + .dock-item + .dock-item { --icon-size: calc(68px + var(--dock-offset-right, 0px)); }
-.dock-item:has(+ .dock-item:hover)               { --icon-size: calc(80px + var(--dock-offset-left, 0px)); }
-.dock-item:has(+ .dock-item + .dock-item:hover)  { --icon-size: calc(68px + var(--dock-offset-left, 0px)); }
+/* Each icon slot — FIXED height so the shelf never grows.
+   The animated.li width changes push siblings apart horizontally.
+   overflow: visible lets the icon-wrap spill upward. */
+.dock-item {
+  position: relative;
+  height: 56px;          /* shelf height locked */
+  flex-shrink: 0;
+  overflow: visible;
+}
 
-/* The icon wrapper — size read from --icon-size, grows upward via parent flex-end */
+/* Icon wrapper — pinned to the bottom of the li, grows upward.
+   width & height driven by @react-spring/web spring. */
 .dock-item-icon-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
+  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.55));
   cursor: pointer;
-  flex-shrink: 0;
-  width:  var(--icon-size, 56px);
-  height: var(--icon-size, 56px);
-  /* instant tracking while hovering */
-  transition:
-    width  0.1s cubic-bezier(0.25, 1, 0.5, 1),
-    height 0.1s cubic-bezier(0.25, 1, 0.5, 1);
   will-change: width, height;
-  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.4));
-}
-.aqua-dock:not(:hover) .dock-item-icon-wrap {
-  /* spring return when cursor leaves dock */
-  transition:
-    width  0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
-    height 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .dock-item-icon-wrap:active {
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
-/* Mac OS X–style dark tooltip label — no arrow, sits above the icon */
+/* Tooltip — fixed distance from dock floor, always above the tallest icon (104px max) */
 .dock-item-label {
   position: absolute;
-  /* float above the tallest possible icon + gap */
-  bottom: calc(100% + 6px);
+  bottom: 112px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(16,16,16,0.78);
-  color: #f8f8f8;
+  background: rgba(14,14,14,0.82);
+  color: #f0f0f0;
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   padding: 3px 9px 4px;
   border-radius: 4px;
   white-space: nowrap;
   pointer-events: none;
-  transition: opacity 0.08s ease;
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+  transition: opacity 0.1s ease;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.55);
   z-index: 9999;
 }
 
-/* Active indicator — small white dot below icon */
+/* Active indicator — small upward-pointing dark triangle, on dock surface */
 .dock-active-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.95);
-  box-shadow: 0 0 4px rgba(255,255,255,0.7), 0 1px 2px rgba(0,0,0,0.3);
-  margin: 3px auto 3px;
-  flex-shrink: 0;
-}
-.dock-dot-placeholder {
-  width: 5px;
-  height: 5px;
-  margin: 3px auto 3px;
-  flex-shrink: 0;
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left:   4px solid transparent;
+  border-right:  4px solid transparent;
+  border-bottom: 5px solid rgba(10,10,10,0.65);
+  pointer-events: none;
 }
 
-/* Vertical separator between app section and trash */
+/* Separator — subtle dark/light pair of lines */
 .dock-separator {
   width: 1px;
   align-self: stretch;
-  margin: 6px 8px 11px;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    rgba(255,255,255,0.55) 20%,
-    rgba(255,255,255,0.55) 80%,
-    transparent 100%
-  );
+  margin: 4px 10px 8px;
+  background: rgba(0,0,0,0.28);
   position: relative;
   flex-shrink: 0;
 }
@@ -726,27 +794,286 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
   content: '';
   position: absolute;
   left: 1px; top: 0; bottom: 0; width: 1px;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    rgba(0,0,0,0.18) 20%,
-    rgba(0,0,0,0.18) 80%,
-    transparent 100%
-  );
+  background: rgba(255,255,255,0.55);
 }
 
-/* Bounce animation on click */
+/* Bounce — react-spring handles the y animation on click in the reference impl.
+   Kept as CSS fallback; applied to .dock-item-icon-wrap */
 @keyframes dock-bounce {
   0%   { transform: translateY(0); }
-  20%  { transform: translateY(-24px); }
-  40%  { transform: translateY(-4px); }
-  58%  { transform: translateY(-16px); }
-  74%  { transform: translateY(-2px); }
-  88%  { transform: translateY(-8px); }
+  22%  { transform: translateY(-20px); }
+  42%  { transform: translateY(-3px); }
+  60%  { transform: translateY(-13px); }
+  76%  { transform: translateY(-2px); }
+  90%  { transform: translateY(-6px); }
   100% { transform: translateY(0); }
 }
-.dock-bouncing { animation: dock-bounce 0.7s cubic-bezier(0.36,0.07,0.19,0.97); }
+.dock-bouncing { animation: dock-bounce 0.65s cubic-bezier(0.36,0.07,0.19,0.97); }
 
-/* ── CRT Overlay — disabled ───────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   BOOT SCREEN — Mac OS X Jaguar authentic boot sequence
+   ═══════════════════════════════════════════════════════════ */
+
+/* Full-viewport overlay — sits above everything */
+.boot-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 999999;
+  background: #4d6ea8;   /* classic Jaguar boot cornflower blue */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* CRT scanlines on the outer blue area */
+}
+.boot-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent        0px, transparent        1px,
+    rgba(0,0,0,0.055)  1px, rgba(0,0,0,0.055)  2px
+  );
+  pointer-events: none;
+}
+
+/* White/light-gray rounded panel — centered, matches screenshot proportions */
+.boot-panel {
+  position: relative;
+  width: 460px;
+  height: 330px;
+  background: linear-gradient(180deg, #f6f6f6 0%, #e6e6e6 100%);
+  border-radius: 6px;
+  box-shadow:
+    0 6px 40px rgba(0,0,0,0.5),
+    0 1px 0   rgba(255,255,255,0.7) inset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+}
+/* Fine scanlines on the panel itself */
+.boot-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent       0px, transparent       1px,
+    rgba(0,0,0,0.032) 1px, rgba(0,0,0,0.032) 2px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Apple logo area */
+.boot-apple {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 3px 8px rgba(0,40,120,0.35));
+}
+
+/* "Mac OS X" — Myriad-like thin sans, dark navy */
+.boot-title {
+  position: relative;
+  z-index: 2;
+  font-family: 'Gill Sans', 'Trebuchet MS', 'Lucida Grande', sans-serif;
+  font-size: 40px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  color: #232340;
+  margin-bottom: 36px;
+  line-height: 1;
+}
+
+/* Track — pill-shaped container */
+.boot-bar-track {
+  position: relative;
+  z-index: 2;
+  width: 280px;
+  height: 14px;
+  border-radius: 7px;
+  background: #b8b8b8;
+  border: 1px solid #888;
+  box-shadow: inset 0 2px 3px rgba(0,0,0,0.28);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+/* Fill — Aqua candy stripe, animated */
+.boot-bar-fill {
+  height: 100%;
+  border-radius: 7px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #4a9ae8  0px,  #4a9ae8  7px,
+    #2878d4  7px,  #2878d4 14px
+  );
+  background-size: 20px 100%;
+  animation: boot-stripe 0.45s linear infinite;
+  transition: width 0.28s linear;
+  position: relative;
+}
+/* Glossy top-half highlight */
+.boot-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.42) 0%,
+    rgba(255,255,255,0.08) 50%,
+    transparent            50%
+  );
+  border-radius: 7px;
+}
+@keyframes boot-stripe {
+  from { background-position: 20px 0; }
+  to   { background-position:  0px 0; }
+}
+
+/* Step label */
+.boot-step {
+  position: relative;
+  z-index: 2;
+  font-family: 'Lucida Grande', sans-serif;
+  font-size: 11px;
+  color: #555;
+  letter-spacing: 0.02em;
+}
+
+/* Fade-out transition */
+.boot-fadeout {
+  animation: boot-fade 0.6s ease forwards;
+}
+@keyframes boot-fade {
+  to { opacity: 0; }
+}
+
+/* ── Mobile gate — shown on phones, hides everything else ──── */
+.mobile-gate {
+  display: none;
+}
+@media (max-width: 640px) {
+  .mobile-gate {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #1a1a1a;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+  }
+  /* Hide everything else on mobile */
+  .boot-screen,
+  .aqua-outer-frame {
+    display: none !important;
+  }
+}
+.mobile-gate-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 320px;
+}
+.mobile-gate-icon {
+  font-size: 56px;
+  line-height: 1;
+}
+.mobile-gate-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+.mobile-gate-body {
+  font-size: 14px;
+  color: #999;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Outer frame ──────────────────────────────────────────── */
+.aqua-outer-frame {
+  position: fixed;
+  inset: 0;
+  /* Neutral desk-like background visible around the iMac */
+  background: radial-gradient(ellipse at 50% 80%, #d8d4cc 0%, #c8c4bc 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── Monitor wrapper ──────────────────────────────────────── */
+/* PNG dimensions: 4608 × 3712 (landscape, RGBA).             */
+/* The iMac sits within a desk/room scene in this image.      */
+/* We size the wrapper to fill the viewport and let the image  */
+/* scale naturally — screen rect is tuned as % of wrapper.    */
+.monitor-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+/* ── OS UI — sits at the screen rect inside the wrapper ────── */
+/*                                                              */
+/* TUNING: run the dev server, enable .aqua-frame--debug below */
+/* to see a red outline of the screen rect. Adjust left/top/   */
+/* width/height until the red box aligns with the iMac screen. */
+/*                                                             */
+/* Values are % of the monitor-wrapper (= % of PNG dimensions) */
+.aqua-frame {
+  position: absolute;
+  left:   30%;
+  top:    10%;
+  width:  40%;
+  height: 55%;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ── Debug helper — add class "aqua-frame--debug" in JSX to   */
+/* see the screen rect as a red outline while tuning.          */
+.aqua-frame--debug {
+  outline: 3px solid red;
+  outline-offset: -3px;
+}
+.aqua-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 98000;
+  opacity: 1;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23g)' opacity='0.045'/></svg>");
+  background-size: 200px 200px;
+}
+
+/* ── Monitor PNG overlay — bezel with transparent screen ───── */
+/* Covers the full wrapper. pointer-events:none keeps UI clickable. */
+/* object-fit:cover fills the frame; object-position centers iMac. */
+.monitor-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  pointer-events: none;
+  user-select: none;
+  z-index: 9999;
+  display: block;
+}
+
+/* ── CRT overlay — disabled; scanlines live on dock + bars only */
 .crt-overlay { display: none; }
 
 /* ── Desktop Icons ────────────────────────────────────────── */
@@ -768,9 +1095,9 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 .desktop-icon.selected { background: rgba(0,80,200,0.45); }
 .desktop-icon-label {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 400;
   text-align: center;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.95), 0 0 6px rgba(0,0,0,0.6);
   line-height: 1.2;
   max-width: 76px;
   word-break: break-word;

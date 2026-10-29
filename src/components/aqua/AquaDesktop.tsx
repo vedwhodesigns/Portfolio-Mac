@@ -8,6 +8,7 @@ import Finder from './Finder';
 import MediaViewer from './MediaViewer';
 import Dock from './Dock';
 import AdminPanel from './AdminPanel';
+import BootScreen from './BootScreen';
 
 // ── Power overlays ─────────────────────────────────────────
 
@@ -15,7 +16,7 @@ function SleepOverlay({ onWake }: { onWake: () => void }) {
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
+        position: 'absolute', inset: 0, zIndex: 9999,
         background: '#000',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer',
@@ -46,7 +47,7 @@ function ShutdownScreen({ onRestart }: { onRestart: () => void }) {
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
+        position: 'absolute', inset: 0, zIndex: 9999,
         background: '#000',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer',
@@ -85,6 +86,8 @@ function DesktopIcon({ label, icon, selected, onSelect, onOpen }: DesktopIconPro
 
 // ── Storage base URL ───────────────────────────────────────
 const STORAGE    = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+// iMac PNG — 4608×3712 RGBA, screen area is transparent (alpha cutout).
+const MONITOR_OVERLAY = `${STORAGE}/hf_20260323_105059_86aca2e6-b23d-4339-a6ab-fd05465d440b.png`;
 const DEVICES128 = `${STORAGE}/128x128/devices`;
 const MIMES128   = `${STORAGE}/128x128/mimetypes`;
 
@@ -104,11 +107,32 @@ function DocumentIcon() {
 
 // ── AquaDesktop ─────────────────────────────────────────────
 
-export default function AquaDesktop() {
-  const { powerState, setPowerState, windows, openWindow, activeFile, loadFromSupabase } = useOSStore();
+const BOOT_KEY = 'portfolio_last_boot';
+const BOOT_TTL = 5 * 60 * 1000; // 5 minutes in ms
 
+function hasBootedRecently(): boolean {
+  try {
+    const ts = localStorage.getItem(BOOT_KEY);
+    if (!ts) return false;
+    return Date.now() - parseInt(ts, 10) < BOOT_TTL;
+  } catch {
+    return false;
+  }
+}
+
+function markBooted() {
+  try { localStorage.setItem(BOOT_KEY, Date.now().toString()); } catch { /* ignore */ }
+}
+
+export default function AquaDesktop() {
+  const { powerState, setPowerState, windows, openWindow, activeFile, files, loadFromSupabase } = useOSStore();
+  // Skip boot if the user was here within the last 5 minutes
+  const [booted, setBooted] = useState(() =>
+    typeof window !== 'undefined' && hasBootedRecently()
+  );
   // Load data from Supabase on mount (falls back to local data if not configured)
   useEffect(() => { loadFromSupabase(); }, [loadFromSupabase]);
+
   const [selectedDesktopIcon, setSelectedDesktopIcon] = useState<string | null>(null);
 
   const handleDesktopClick = useCallback(() => {
@@ -136,68 +160,112 @@ export default function AquaDesktop() {
   ];
 
   return (
-    <div
-      className="aqua-wallpaper aqua-desktop"
-      style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}
-      onClick={handleDesktopClick}
-    >
-      {/* Menu Bar */}
-      <MenuBar />
-
-      {/* Desktop Icons — top-right column */}
-      <div style={{
-        position: 'absolute',
-        top: 32,
-        right: 12,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 4,
-        zIndex: 100,
-      }}>
-        {desktopIcons.map(icon => (
-          <DesktopIcon
-            key={icon.id}
-            label={icon.label}
-            icon={icon.icon}
-            selected={selectedDesktopIcon === icon.id}
-            onSelect={() => setSelectedDesktopIcon(icon.id)}
-            onOpen={icon.onOpen}
-          />
-        ))}
+    <>
+    {/* Mobile gate — shown only on small screens */}
+    <div className="mobile-gate">
+      <div className="mobile-gate-inner">
+        <div className="mobile-gate-icon">🖥️</div>
+        <h1 className="mobile-gate-title">Best viewed on desktop</h1>
+        <p className="mobile-gate-body">
+          This portfolio is a Mac OS X experience.<br />
+          Open it on a laptop or desktop for the full version.
+        </p>
       </div>
-
-      {/* CRT scanlines + noise overlay */}
-      <div className="crt-overlay" />
-
-      {/* Windows */}
-      {windows.map(win => (
-        <AquaWindow key={win.id} win={win}>
-          {win.type === 'finder' && (
-            <Finder windowId={win.id} initialView={win.finderView ?? 'desktop'} />
-          )}
-          {win.type === 'media' && activeFile && (
-            <MediaViewer file={activeFile} />
-          )}
-          {win.type === 'about' && (
-            <AboutWindow title={win.title} />
-          )}
-          {win.type === 'admin' && (
-            <AdminPanel />
-          )}
-        </AquaWindow>
-      ))}
-
-      {/* Dock */}
-      <Dock />
-
-      {/* Power Overlays */}
-      {powerState === 'sleep' && (
-        <SleepOverlay onWake={() => setPowerState('active')} />
-      )}
-      {powerState === 'shutdown' && (
-        <ShutdownScreen onRestart={() => { setPowerState('active'); }} />
-      )}
     </div>
+
+    <div className="aqua-outer-frame aqua-desktop">
+
+      {/* Monitor wrapper — aspect-ratio container that holds the iMac image.
+          The OS lives inside this, clipped to the screen rect.
+          The PNG overlay (bezel with transparent screen) sits on top. */}
+      <div className="monitor-wrapper">
+
+        {/* Layer 1: OS UI — clipped to the screen rect via .aqua-frame */}
+        <div className="aqua-frame aqua-frame--debug">
+        {/* Boot screen — inside the screen, not full-viewport */}
+        {!booted && <BootScreen onComplete={() => { markBooted(); setBooted(true); }} />}
+        {/* Wallpaper + all desktop content */}
+        <div
+          className="aqua-wallpaper"
+          style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
+          onClick={handleDesktopClick}
+        >
+          {/* Menu Bar */}
+          <MenuBar />
+
+          {/* Desktop Icons — top-right column */}
+          <div style={{
+            position: 'absolute',
+            top: 32,
+            right: 12,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+            zIndex: 100,
+          }}>
+            {desktopIcons.map(icon => (
+              <DesktopIcon
+                key={icon.id}
+                label={icon.label}
+                icon={icon.icon}
+                selected={selectedDesktopIcon === icon.id}
+                onSelect={() => setSelectedDesktopIcon(icon.id)}
+                onOpen={icon.onOpen}
+              />
+            ))}
+          </div>
+
+          {/* Windows */}
+          {windows.map(win => {
+            // Each media window resolves its own file via fileId (fixes shared-activeFile bug)
+            const mediaFile = win.type === 'media'
+              ? (files.find(f => f.id === win.fileId) ?? activeFile)
+              : null;
+            return (
+              <AquaWindow key={win.id} win={win}>
+                {win.type === 'finder' && (
+                  <Finder windowId={win.id} initialView={win.finderView ?? 'desktop'} />
+                )}
+                {win.type === 'media' && mediaFile && (
+                  <MediaViewer file={mediaFile} />
+                )}
+                {win.type === 'about' && (
+                  <AboutWindow title={win.title} />
+                )}
+                {win.type === 'admin' && (
+                  <AdminPanel />
+                )}
+              </AquaWindow>
+            );
+          })}
+
+          {/* Dock */}
+          <Dock />
+
+          {/* Power Overlays */}
+          {powerState === 'sleep' && (
+            <SleepOverlay onWake={() => setPowerState('active')} />
+          )}
+          {powerState === 'shutdown' && (
+            <ShutdownScreen onRestart={() => { window.location.reload(); }} />
+          )}
+        </div>
+
+        {/* CRT Scanlines — on top of everything inside the screen */}
+        <div className="crt-overlay" />
+        </div>{/* end .aqua-frame */}
+
+        {/* Layer 2: iMac G4 PNG overlay — bezel with transparent screen hole.
+            pointer-events: none so the UI behind remains fully interactive. */}
+        <img
+          className="monitor-overlay"
+          src={MONITOR_OVERLAY}
+          alt=""
+          draggable={false}
+        />
+      </div>{/* end .monitor-wrapper */}
+    </div>
+    </>
   );
 }
 

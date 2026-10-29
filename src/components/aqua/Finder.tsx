@@ -54,35 +54,52 @@ const ColumnViewSVG = () => (
   </svg>
 );
 
+// ── Per-folder icon map for column view ──────────────────
+// Declared after URL constants so template literals resolve correctly.
+let FOLDER_ICONS: Record<string, string> = {};
+
 // ── Storage base URL ──────────────────────────────────────
-const STORAGE  = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
-const APPS128  = `${STORAGE}/128x128/apps`;
-const PLACES128 = `${STORAGE}/128x128/places`;
-const ACTIONS128 = `${STORAGE}/128x128/actions`;
-const SCALABLE_PLACES = `${STORAGE}/scalable/places`;
+const STORAGE         = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const CHEETAH         = `${STORAGE}/Mac-OS-X-Cheetah-master`;
+const APPS128         = `${CHEETAH}/128x128/apps`;
+const PLACES128       = `${CHEETAH}/128x128/places`;
+const ACTIONS128      = `${CHEETAH}/128x128/actions`;
+const SCALABLE_PLACES = `${CHEETAH}/scalable/places`;
+const MACOSX_GTK      = `${STORAGE}/MacOS-X/gtk-2.0/icons`;
+
+FOLDER_ICONS = {
+  applications:  `${APPS128}/applications-system.png`,
+  'filter-PDF':  `${PLACES128}/folder-documents.png`,
+  'filter-Video':`${PLACES128}/folder-video.png`,
+  'filter-Image':`${PLACES128}/folder-pictures.png`,
+  home:          `${PLACES128}/user-home.png`,
+  favorites:     `${APPS128}/gnome-favorites.png`,
+  desktop:       `${PLACES128}/user-desktop.png`,
+};
 
 // Shortcut icons — real Aqua images from Supabase storage
 const ComputerSVG     = () => <img src={`${PLACES128}/computer.png`}           alt="Computer"     width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
 const HomeSVG         = () => <img src={`${PLACES128}/user-home.png`}          alt="Home"         width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
-const FavoritesSVG    = () => <img src={`${ACTIONS128}/bookmark-new.png`}      alt="Favorites"    width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
-const ApplicationsSVG = () => <img src={`${APPS128}/expose.png`}               alt="Applications" width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
+const FavoritesSVG    = () => <img src={`${APPS128}/gnome-favorites.png`}      alt="Favorites"    width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
+const ApplicationsSVG = () => <img src={`${APPS128}/applications-system.png`}  alt="Applications" width={28} height={28} style={{ objectFit: 'contain' }} draggable={false} />;
 
 // ── File/folder icon images from Supabase storage ─────────
 const MIME_ICONS: Record<string, string> = {
-  Video:       `${PLACES128}/folder-video.png`,   // overridden per-kind below
+  Video:       `${PLACES128}/folder-video.png`,
   Image:       `${PLACES128}/folder-pictures.png`,
   PDF:         `${PLACES128}/folder-documents.png`,
-  Application: `${APPS128}/expose.png`,
+  Application: `${APPS128}/applications-system.png`,
   Folder:      `${PLACES128}/folder-documents.png`,
 };
 
-// Scalable mime icons (SVG, crisp at any size)
-const SCALABLE = `${STORAGE}/scalable`;
+// Mime icons — Cheetah 128x128/mimetypes (confirmed present)
+const SCALABLE = `${CHEETAH}/scalable`;
 const FILE_MIME_ICONS: Record<string, string> = {
-  Video:       `${SCALABLE}/mimetypes/video-x-generic.svg`,
-  Image:       `${SCALABLE}/mimetypes/image-x-generic.svg`,
-  PDF:         `${SCALABLE}/mimetypes/application-pdf.svg`,
-  Application: `${SCALABLE}/mimetypes/application-x-executable.svg`,
+  Video:       `${CHEETAH}/128x128/mimetypes/gnome-mime-video.png`,
+  Image:       `${CHEETAH}/128x128/mimetypes/gnome-mime-image.png`,
+  PDF:         `${CHEETAH}/128x128/mimetypes/application-pdf.png`,
+  Application: `${CHEETAH}/128x128/mimetypes/application-x-executable.png`,
+  default:     `${CHEETAH}/128x128/mimetypes/text-x-generic.png`,
 };
 
 const FolderSVG = ({ color: _color }: { color?: string }) => (
@@ -91,12 +108,12 @@ const FolderSVG = ({ color: _color }: { color?: string }) => (
 );
 
 const DriveSVG = () => (
-  <img src={`${STORAGE}/128x128/devices/drive-harddisk.png`} alt="Drive"
+  <img src={`${CHEETAH}/128x128/devices/drive-harddisk.png`} alt="Drive"
     width={52} height={52} style={{ objectFit: 'contain', display: 'block' }} draggable={false} />
 );
 
 const FileSVG = ({ kind }: { kind: string }) => {
-  const src = FILE_MIME_ICONS[kind] ?? `${SCALABLE}/mimetypes/text-x-generic.svg`;
+  const src = FILE_MIME_ICONS[kind] ?? FILE_MIME_ICONS.default;
   return (
     <img src={src} alt={kind}
       width={44} height={52} style={{ objectFit: 'contain', display: 'block' }} draggable={false} />
@@ -118,6 +135,57 @@ function FileIcon({ file, size = 52 }: { file: FileData; size?: number }) {
   }
   if (file.kind === 'Folder') return <FolderSVG />;
   return <div style={{ transform: `scale(${size / 52})`, transformOrigin: 'top center' }}><FileSVG kind={file.kind} /></div>;
+}
+
+// ── Finder Sidebar ─────────────────────────────────────────
+
+const SIDEBAR_ITEMS = [
+  { id: 'computer',      label: 'Computer',     iconKey: 'computer' },
+  { id: 'desktop',       label: 'Macintosh HD', iconKey: 'hd' },
+  { id: 'home',          label: 'vedant',       iconKey: 'home' },
+  { id: 'favorites',     label: 'Favorites',    iconKey: 'favorites' },
+  { id: 'applications',  label: 'Applications', iconKey: 'apps' },
+  { id: 'filter-Video',  label: 'Movies',       iconKey: 'video' },
+  { id: 'filter-Image',  label: 'Pictures',     iconKey: 'pictures' },
+  { id: 'filter-PDF',    label: 'Documents',    iconKey: 'docs' },
+];
+
+function FinderSidebar({ currentView, onNavigate }: {
+  currentView: string;
+  onNavigate: (view: string) => void;
+}) {
+  const icons: Record<string, string> = {
+    computer:  `${PLACES128}/computer.png`,
+    hd:        `${CHEETAH}/128x128/devices/drive-harddisk.png`,
+    home:      `${PLACES128}/user-home.png`,
+    favorites: `${APPS128}/gnome-favorites.png`,
+    apps:      `${APPS128}/applications-system.png`,
+    video:     `${PLACES128}/folder-video.png`,
+    pictures:  `${PLACES128}/folder-pictures.png`,
+    docs:      `${PLACES128}/folder-documents.png`,
+  };
+
+  return (
+    <div className="finder-sidebar">
+      <span className="finder-sidebar-label">PLACES</span>
+      {SIDEBAR_ITEMS.map(item => (
+        <button
+          key={item.id + item.label}
+          className={`finder-sidebar-item ${currentView === item.id ? 'selected' : ''}`}
+          onClick={e => { e.stopPropagation(); onNavigate(item.id); }}
+        >
+          <img
+            src={icons[item.iconKey]}
+            alt={item.label}
+            width={16} height={16}
+            style={{ objectFit: 'contain', flexShrink: 0 }}
+            draggable={false}
+          />
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
+        </button>
+      ))}
+    </div>
+  );
 }
 
 // ── Finder Component ───────────────────────────────────────
@@ -270,11 +338,11 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
           title="Back"
         >
           <img
-            src={`${SCALABLE_PLACES}/go-previous-symbolic.svg`}
+            src={`${MACOSX_GTK}/gtk-go-back.png`}
             alt="Back"
             width={14}
             height={14}
-            style={{ objectFit: 'contain', opacity: canGoBack ? 1 : 0.35, filter: 'brightness(0)' }}
+            style={{ objectFit: 'contain', opacity: canGoBack ? 1 : 0.35 }}
             draggable={false}
           />
           <span style={{ fontSize: 11, marginLeft: 3 }}>Back</span>
@@ -322,6 +390,10 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
         ))}
       </div>
 
+      {/* ── Body: sidebar + content ── */}
+      <div className="finder-body">
+      <FinderSidebar currentView={currentView} onNavigate={navigateTo} />
+
       {/* ── Content ── */}
       <div className="aqua-finder-content" onClick={() => setSelectedId(null)}>
 
@@ -336,7 +408,7 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
                   className={`finder-column-item ${colSel[0] === item.id ? 'selected' : ''}`}
                   onClick={e => { e.stopPropagation(); setColSel([item.id, null]); }}
                 >
-                  <img src={`${PLACES128}/folder-documents.png`} alt="folder" width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
+                  <img src={FOLDER_ICONS[item.id] ?? `${PLACES128}/folder-documents.png`} alt="folder" width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
                   <span>{item.type === 'folder' ? item.name : ''}</span>
                   {item.type === 'folder' && <span style={{ marginLeft: 'auto', fontSize: 9, opacity: 0.6 }}>›</span>}
                 </button>
@@ -362,7 +434,7 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
                   >
                     {item.type === 'folder'
                       ? <img src={`${PLACES128}/folder-open.png`} alt="folder" width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
-                      : <img src={`${PLACES128}/user-desktop.png`} alt="file" width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
+                      : <img src={FILE_MIME_ICONS[item.fileData.kind] ?? FILE_MIME_ICONS.default} alt={item.fileData.kind} width={16} height={16} style={{ objectFit: 'contain', flexShrink: 0 }} draggable={false} />
                     }
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {item.type === 'folder' ? item.name : item.fileData.name}
@@ -505,6 +577,7 @@ export default function Finder({ windowId, initialView = 'desktop' }: FinderProp
           </div>
         )}
       </div>
+      </div>{/* end finder-body */}
 
       {/* ── Status bar ── */}
       <div className="aqua-finder-statusbar">

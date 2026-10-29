@@ -37,6 +37,7 @@ export interface OSWindow {
   prevBounds?: { x: number; y: number; width: number; height: number }
   zIndex: number
   finderView?: 'desktop' | 'favorites' | 'applications' | string
+  fileId?: string   // for type === 'media' — each window tracks its own file
 }
 
 interface OSStore {
@@ -314,7 +315,7 @@ export const useOSStore = create<OSStore>((set) => ({
           activeFile: file,
           windows: state.windows.map((w) =>
             w.id === mediaWindowId
-              ? { ...w, isMinimized: false, zIndex: newZ, title: file.name }
+              ? { ...w, isMinimized: false, zIndex: newZ, title: file.name, fileId: file.id }
               : w
           ),
           topZIndex: newZ,
@@ -336,6 +337,7 @@ export const useOSStore = create<OSStore>((set) => ({
             isMinimized: false,
             isMaximized: false,
             zIndex: newZ,
+            fileId: file.id,
           },
         ],
         topZIndex: newZ,

@@ -21,6 +21,9 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
+        {/* Lucida Grande web font for the Aqua OS on Windows / Linux / Android */}
+        <link rel="preconnect" href="https://fonts.cdnfonts.com" />
+        <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/lucida-grande" />
       </head>
       <body>{children}</body>
     </html>

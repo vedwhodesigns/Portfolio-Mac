@@ -4,9 +4,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useOSStore } from '@/store/useOSStore';
 
 // ── Storage base URL ───────────────────────────────────────
-const STORAGE  = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
-const APPS128  = `${STORAGE}/128x128/apps`;
-const STATUS_S = `${STORAGE}/scalable/status`;
+const STORAGE   = 'https://gegzhrnbszueufkcryit.supabase.co/storage/v1/object/public/portfolio-media';
+const CHEETAH   = `${STORAGE}/Mac-OS-X-Cheetah-master`;
+const APPS128   = `${CHEETAH}/128x128/apps`;
+const STATUS_S  = `${CHEETAH}/scalable/status`;
+const MACOSX    = `${STORAGE}/MacOS-X/gtk-2.0/icons`;
 
 // ── Types ─────────────────────────────────────────────────
 
@@ -152,7 +154,7 @@ function WeatherApplet() {
         if (t.includes('shower') || t.includes('rain') || t.includes('drizzle')) return `${STATUS_S}/weather-showers.svg`;
         if (t.includes('fog') || t.includes('mist') || t.includes('haze')) return `${STATUS_S}/weather-fog.svg`;
         if (t.includes('cloud')) return `${STATUS_S}/weather-few-clouds.svg`;
-        return `${STATUS_S}/weather-clear.svg`;
+        return `${STATUS_S}/stock_weather-few-clouds.svg`;
       })()
     : null;
 
@@ -450,12 +452,12 @@ function VolumeApplet() {
   }, [open]);
 
   const volIcon = volume === 0
-    ? `${STATUS_S}/audio-volume-muted.svg`
+    ? `${MACOSX}/volume-mute.png`
     : volume < 0.4
-    ? `${STATUS_S}/audio-volume-low.svg`
+    ? `${MACOSX}/volume-min.png`
     : volume < 0.75
-    ? `${STATUS_S}/audio-volume-medium.svg`
-    : `${STATUS_S}/audio-volume-high.svg`;
+    ? `${MACOSX}/volume-med.png`
+    : `${MACOSX}/volume-max.png`;
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
@@ -468,16 +470,16 @@ function VolumeApplet() {
         <img src={volIcon} alt="Volume" width={14} height={14} style={{ objectFit: 'contain' }} draggable={false} />
       </button>
       {open && (
-        <div className="aqua-dropdown" style={{ right: 0, top: '100%', width: 48, padding: '10px 0' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <img src={`${STATUS_S}/audio-volume-high.svg`} alt="High" width={12} height={12} draggable={false} />
+        <div className="aqua-dropdown" style={{ right: 0, top: '100%', width: 30, padding: '8px 0', minWidth: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <img src={`${MACOSX}/volume-max.png`} alt="High" width={10} height={10} draggable={false} style={{ opacity: 0.75 }} />
             <input
               type="range" min={0} max={1} step={0.02}
               value={volume}
               onChange={e => setVolume(parseFloat(e.target.value))}
-              style={{ writingMode: 'vertical-lr', direction: 'rtl', height: 70, cursor: 'default' }}
+              style={{ writingMode: 'vertical-lr', direction: 'rtl', height: 88, cursor: 'default', width: 18 }}
             />
-            <img src={`${STATUS_S}/audio-volume-muted.svg`} alt="Mute" width={12} height={12} draggable={false} />
+            <img src={`${MACOSX}/volume-mute.png`} alt="Mute" width={10} height={10} draggable={false} style={{ opacity: 0.75 }} />
           </div>
         </div>
       )}
@@ -593,8 +595,8 @@ export default function MenuBar() {
         { kind: 'item', label: 'Force Quit Finder', disabled: true, shortcut: '⌥⌘⎋' },
         { kind: 'separator' },
         { kind: 'item', label: 'Sleep', action: () => setPowerState('sleep') },
-        { kind: 'item', label: 'Restart…', action: () => { setPowerState('active'); window.location.reload(); } },
-        { kind: 'item', label: 'Shut Down…', action: () => setPowerState('shutdown') },
+        { kind: 'item', label: 'Restart…', action: () => { try { localStorage.removeItem('portfolio_last_boot'); } catch {} window.location.reload(); } },
+        { kind: 'item', label: 'Shut Down…', action: () => { try { localStorage.removeItem('portfolio_last_boot'); } catch {} setPowerState('shutdown'); } },
         { kind: 'separator' },
         { kind: 'item', label: 'Log Out…', shortcut: '⇧⌘Q', disabled: true },
       ],
